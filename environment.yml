@@ -1,0 +1,6 @@
+name: esmpy
+channels:
+  - nessi
+  - conda-forge
+dependencies:
+  - esmpy

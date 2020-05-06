@@ -48,6 +48,12 @@ CLOBBERDIRS = $(ESMF_BUILD)/lib $(ESMF_BUILD)/mod $(ESMF_BUILD)/obj \
 # after the include of common.mk, so it does not interfere with the
 # definition of the default build rule.
 
+builddocker:
+	        docker build --tag bryandollery/esmf .
+
+rundocker:
+	        docker run -it --rm -v $$HOME/.ssh:/root/ssh bryandollery/esmf
+
 all:  lib build_unit_tests build_examples build_system_tests
 
 
