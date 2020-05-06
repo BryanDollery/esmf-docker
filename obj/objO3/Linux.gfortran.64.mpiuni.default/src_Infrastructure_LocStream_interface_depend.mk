@@ -1,0 +1,4 @@
+  /root/src/esmf/obj/objO3/Linux.gfortran.64.mpiuni.default/ESMF_LocStream_C.o : /root/src/esmf/obj/objO3/Linux.gfortran.64.mpiuni.default/ESMF_Array.o /root/src/esmf/obj/objO3/Linux.gfortran.64.mpiuni.default/ESMF_ArraySpec.o /root/src/esmf/obj/objO3/Linux.gfortran.64.mpiuni.default/ESMF_Base.o /root/src/esmf/obj/objO3/Linux.gfortran.64.mpiuni.default/ESMF_LocStream.o /root/src/esmf/obj/objO3/Linux.gfortran.64.mpiuni.default/ESMF_LogErr.o /root/src/esmf/obj/objO3/Linux.gfortran.64.mpiuni.default/ESMF_UtilTypes.o 
+  /root/src/esmf/obj/objO3/Linux.gfortran.64.mpiuni.default/ESMCI_LocStream_F.o : 
+  /root/src/esmf/obj/objO3/Linux.gfortran.64.mpiuni.default/ESMCI_LocStream.o : ESMCI_LocStream.h
+  /root/src/esmf/obj/objO3/Linux.gfortran.64.mpiuni.default/ESMC_LocStream.o : ESMCI_LocStream.h ESMC_LocStream.h

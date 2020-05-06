@@ -1,0 +1,3 @@
+  /root/src/esmf/obj/objO3/Linux.gfortran.64.mpiuni.default/ESMF_RHandle.o : /root/src/esmf/obj/objO3/Linux.gfortran.64.mpiuni.default/ESMF_Base.o /root/src/esmf/obj/objO3/Linux.gfortran.64.mpiuni.default/ESMF_F90Interface.o /root/src/esmf/obj/objO3/Linux.gfortran.64.mpiuni.default/ESMF_IOUtil.o /root/src/esmf/obj/objO3/Linux.gfortran.64.mpiuni.default/ESMF_InitMacros.o /root/src/esmf/obj/objO3/Linux.gfortran.64.mpiuni.default/ESMF_LogErr.o /root/src/esmf/obj/objO3/Linux.gfortran.64.mpiuni.default/ESMF_UtilTypes.o 
+  /root/src/esmf/obj/objO3/Linux.gfortran.64.mpiuni.default/ESMCI_RHandle_F.o : ESMCI_RHandle.h
+  /root/src/esmf/obj/objO3/Linux.gfortran.64.mpiuni.default/ESMC_RHandle.o : ESMCI_RHandle.h ESMC_RHandle.h

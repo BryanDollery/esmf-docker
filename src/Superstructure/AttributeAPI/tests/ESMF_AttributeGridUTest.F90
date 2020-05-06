@@ -1,0 +1,2093 @@
+/* Copyright (C) 1991-2018 Free Software Foundation, Inc.
+   This file is part of the GNU C Library.
+
+   The GNU C Library is free software; you can redistribute it and/or
+   modify it under the terms of the GNU Lesser General Public
+   License as published by the Free Software Foundation; either
+   version 2.1 of the License, or (at your option) any later version.
+
+   The GNU C Library is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   Lesser General Public License for more details.
+
+   You should have received a copy of the GNU Lesser General Public
+   License along with the GNU C Library; if not, see
+   <http://www.gnu.org/licenses/>.  */
+/* This header is separate from features.h so that the compiler can
+   include it implicitly at the start of every compilation.  It must
+   not itself include <features.h> or any other header that includes
+   <features.h> because the implicit include comes before any feature
+   test macros that may be defined in a source file before it first
+   explicitly includes a system header.  GCC knows the name of this
+   header in order to preinclude it.  */
+/* glibc's intent is to support the IEC 559 math functionality, real
+   and complex.  If the GCC (4.9 and later) predefined macros
+   specifying compiler intent are available, use them to determine
+   whether the overall intent is to support these features; otherwise,
+   presume an older compiler has intent to support these features and
+   define these macros by default.  */
+/* wchar_t uses Unicode 10.0.0.  Version 10.0 of the Unicode Standard is
+   synchronized with ISO/IEC 10646:2017, fifth edition, plus
+   the following additions from Amendment 1 to the fifth edition:
+   - 56 emoji characters
+   - 285 hentaigana
+   - 3 additional Zanabazar Square characters */
+/* We do not support C11 <threads.h>.  */
+! $Id$
+!
+! Earth System Modeling Framework
+! Copyright 2002-2014, University Corporation for Atmospheric Research,
+! Massachusetts Institute of Technology, Geophysical Fluid Dynamics
+! Laboratory, University of Michigan, National Centers for Environmental
+! Prediction, Los Alamos National Laboratory, Argonne National Laboratory,
+! NASA Goddard Space Flight Center.
+! Licensed under the University of Illinois-NCSA License.
+!
+!==============================================================================
+!
+program ESMF_AttributeGridUTest
+!------------------------------------------------------------------------------
+! INCLUDES
+#include "ESMF.h"
+#if 0
+! $Id$
+!
+! Earth System Modeling Framework
+! Copyright 2002-2014, University Corporation for Atmospheric Research,
+! Massachusetts Institute of Technology, Geophysical Fluid Dynamics
+! Laboratory, University of Michigan, National Centers for Environmental
+! Prediction, Los Alamos National Laboratory, Argonne National Laboratory,
+! NASA Goddard Space Flight Center.
+! Licensed under the University of Illinois-NCSA License.
+!
+!==============================================================================
+!
+#endif
+#if 0
+!------------------------------------------------------------------------------
+! Macros for Attribute testing
+!
+! The structure of this file and these macros are compatible with the gcc
+! preprocessor - they assume the use of ## as a paste operator, require that
+! no additional spaces be added (e.g. no pre-tokenization as done by some
+! preprocessors which assume C syntax), assume an option exists to suppress
+! C-specific syntax directives such as #line or #pragma, and that an option
+! exists to produce output on stdout and not into a file. The output of
+! the preprocessor phase is a valid .F90 file ready to be compiled by the
+! standard fortran compiler. (gcc is *not* used for compilation.)
+!
+! The macros are intended to be written with 
+\ at the end of each line of
+! a multiline macro, and the output piped thru 'tr' to translate each
+! 
+ into <cr> to produce multiple lines of fortran code from a single
+! macro invocation. If any preprocessor directives are to be left in the
+! output file (e.g. #include ""), the source should use #directive (e.g.
+! #include "header.h" ) again using 'tr' to substitute # for # after
+! preprocessing is completed.
+!------------------------------------------------------------------------------
+#endif
+! variable declarations
+! variable declarations
+! main test body
+! main test body
+!
+!==============================================================================
+!BOP
+! !PROGRAM: ESMF_AttributeGridUTest - Attribute Grid Unit Tests
+!
+! !DESCRIPTION:
+!
+! The code in this file drives F90 Attribute Grid unit tests.
+! The companion file ESMF\_Attribute.F90 contains the definitions for the
+! Attribute methods.
+!
+!-----------------------------------------------------------------------------
+! !USES:
+      use ESMF_TestMod ! test methods
+      use ESMF ! the ESMF Framework
+      implicit none
+!------------------------------------------------------------------------------
+! The following line turns the CVS identifier string into a printable variable.
+      character(*), parameter :: version = &
+      '$Id$'
+!------------------------------------------------------------------------------
+!-------------------------------------------------------------------------
+!=========================================================================
+      ! individual test failure message
+      character(ESMF_MAXSTR) :: failMsg, name
+      ! cumulative result: count failures; no failures equals "all pass"
+      integer :: result = 0
+      ! local variables
+      type(ESMF_Grid) :: grid
+      ! macro variables
+      character(ESMF_MAXSTR) :: attrname, attrnameOut, attrvalue 
+ integer :: rc, count, items 
+ type(ESMF_TypeKind_Flag) :: attrTK 
+ 
+ character(3*ESMF_MAXSTR) :: inASCII, outASCII 
+ logical :: correct 
+ integer :: i 
+ 
+ real(ESMF_KIND_R8), dimension(3) :: inR8l, defaultR8l, & 
+ dfltoutR8l, outR8l 
+ character(ESMF_MAXSTR) :: inChar, outChar, & 
+ defaultChar, dfltoutChar 
+ real(ESMF_KIND_R8) :: inR8, outR8,& 
+ defaultR8, dfltoutR8 
+ real(ESMF_KIND_R8), dimension(4) :: defaultR8lWrong 
+ 
+ ! non exhaustive constant value variables 
+ real(ESMF_KIND_R8) :: outConstantR8 
+ real(ESMF_KIND_R8), dimension(3) :: outConstantR8l 
+ character(ESMF_MAXSTR) :: outConstantChar 
+ character(ESMF_MAXSTR), dimension(3) :: outConstantCharl 
+ 
+ logical :: isPresent 
+ 
+#ifdef ESMF_TESTEXHAUSTIVE 
+ 
+ integer :: itemCount 
+ 
+ integer(ESMF_KIND_I4) :: inI4, outI4, & 
+ defaultI4, dfltoutI4 
+ integer(ESMF_KIND_I4), dimension(3) :: inI4l, outI4l, & 
+ defaultI4l, dfltoutI4l 
+ integer(ESMF_KIND_I4), dimension(4) :: defaultI4lWrong 
+ integer(ESMF_KIND_I4), dimension(10) :: outI4lLong 
+ integer(ESMF_KIND_I8) :: inI8, outI8, & 
+ defaultI8, dfltoutI8 
+ integer(ESMF_KIND_I8), dimension(3) :: inI8l, outI8l, & 
+ defaultI8l, dfltoutI8l 
+ integer(ESMF_KIND_I8), dimension(4) :: defaultI8lWrong 
+ integer(ESMF_KIND_I8), dimension(10) :: outI8lLong 
+ real(ESMF_KIND_R4) :: inR4, outR4, & 
+ defaultR4, dfltoutR4 
+ real(ESMF_KIND_R4), dimension(3) :: inR4l, outR4l, & 
+ defaultR4l, dfltoutR4l 
+ real(ESMF_KIND_R4), dimension(4) :: defaultR4lWrong 
+ real(ESMF_KIND_R4), dimension(10) :: outR4lLong 
+ character(ESMF_MAXSTR) :: inEmpty, outEmpty 
+ character(ESMF_MAXSTR), dimension(3) :: inCharl, defaultCharl, & 
+ dfltoutCharl, outCharl 
+ character(ESMF_MAXSTR), dimension(4) :: defaultCharlWrong 
+ character(ESMF_MAXSTR), dimension(10) :: outCharlLong 
+ logical :: inLog, outLog, & 
+ defaultLog, dfltoutLog 
+ logical, dimension(3) :: inLogl, defaultLogl, & 
+ dfltoutLogl, outLogl 
+ logical, dimension(4) :: defaultLoglWrong 
+ logical, dimension(10) :: outLoglLong 
+ real(ESMF_KIND_R8), dimension(10) :: outR8lLong 
+ 
+ ! exhaustive constant value variables 
+ integer(ESMF_KIND_I4) :: outConstantI4 
+ integer(ESMF_KIND_I4), dimension(3) :: outConstantI4l 
+ integer(ESMF_KIND_I8) :: outConstantI8 
+ integer(ESMF_KIND_I8), dimension(3) :: outConstantI8l 
+ real(ESMF_KIND_R4) :: outConstantR4 
+ real(ESMF_KIND_R4), dimension(3) :: outConstantR4l 
+ logical :: outConstantLogical 
+ logical, dimension(3) :: outConstantLogicall 
+ 
+ character(ESMF_MAXSTR), dimension(3) :: attpackList, attpackListOut, & 
+ attpackListOut2, attpackDfltList, & 
+ attpackListOut3, attpackListOut4 
+ 
+#endif 
+! < end macro - do not edit directly > 
+!------------------------------------------------------------------------------
+      type(ESMF_Grid) :: gridA, gridAlias, gridHybrid, gridValue 
+! < end macro - do not edit directly > 
+!------------------------------------------------------------------------------
+!-------------------------------------------------------------------------------
+! The unit tests are divided into Sanity and Exhaustive. The Sanity tests are
+! always run. When the environment variable, EXHAUSTIVE, is set to ON then
+! the EXHAUSTIVE and sanity tests both run. If the EXHAUSTIVE variable is set
+! to OFF, then only the sanity unit tests.
+! Special strings (Non-exhaustive and exhaustive) have been
+! added to allow a script to count the number and types of unit tests.
+!-------------------------------------------------------------------------------
+  !-----------------------------------------------------------------------------
+  call ESMF_TestStart(ESMF_SRCLINE, rc=rc)
+  if (rc /= ESMF_SUCCESS) call ESMF_Finalize(endflag=ESMF_END_ABORT)
+  !-----------------------------------------------------------------------------
+      !------------------------------------------------------------------------
+      ! preparations
+      ! grids
+      grid = ESMF_GridEmptyCreate(rc=rc)
+!-------------------------------------------------------------------------
+! GRID
+!-------------------------------------------------------------------------
+!---------------------------------------------------------------------------- 
+! <This section created by macro - do not edit directly> 
+ 
+#ifdef ESMF_TESTEXHAUSTIVE 
+ 
+ !---------------------------------------------------------------------- 
+ ! Empty value 
+ !---------------------------------------------------------------------- 
+ !EX_UTest 
+ ! Add an empty value character Attribute to a Grid Test 
+ call ESMF_AttributeSet(grid, name="EmptyValue", value="", rc=rc) 
+ write(failMsg, *) "Did not return ESMF_SUCCESS" 
+ write(name, *) "Adding an empty value character Attribute to mobj Test" 
+ call ESMF_Test((rc==ESMF_SUCCESS), name, failMsg, result, ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ 
+ !EX_UTest 
+ ! Get an empty valGridue character from a Grid Test 
+ call ESMF_AttributeGet(grid, name="EmptyValue", value=outEmpty, rc=rc) 
+ write(failMsg, *) "Did not return ESMF_SUCCESS or wrong value" 
+ write(name, *) "Getting an empty value character Attribute from mobj Test" 
+ call ESMF_Test((rc==ESMF_SUCCESS).and.(""==outEmpty), & 
+ name, failMsg, result, ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ 
+ !---------------------------------------------------------------------- 
+ ! Empty value from variable 
+ !---------------------------------------------------------------------- 
+ inEmpty = "" 
+ !EX_UTest 
+ ! Add an empty value character to a Grid Test 
+ call ESMF_AttributeSet(grid, name="EmptyValue", value=inEmpty, rc=rc) 
+ write(failMsg, *) "Did not return ESMF_SUCCESS" 
+ write(name, *) "Adding an empty value character Attribute to mobj Test 2" 
+ call ESMF_Test((rc==ESMF_SUCCESS), name, failMsg, result, ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ 
+ !EX_UTest 
+ ! Get an empty value character from a Grid Test 
+ call ESMF_AttributeGet(grid, name="EmptyValue", value=outEmpty, rc=rc) 
+ write(failMsg, *) "Did not return ESMF_SUCCESS or wrong value" 
+ write(name, *) "Getting an empty value character Attribute from mobj Test 2" 
+ call ESMF_Test((rc==ESMF_SUCCESS).and.(inEmpty==outEmpty), & 
+ name, failMsg, result, ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ 
+ !---------------------------------------------------------------------- 
+ ! Long value 
+ !---------------------------------------------------------------------- 
+ !EX_UTest 
+ ! Add a long value character to a Grid Test 
+ call ESMF_AttributeSet(grid, name="LongValue", value= & 
+ "This is a really long line & 
+        &that's broken into multiple lines & 
+        &to compile, and it is also a runon & 
+        &sentence, which is bad grammar but a good & 
+        &test of how the Attributes behave with long & 
+        &values, yada yada yada!!!", rc=rc) 
+ write(failMsg, *) "Did not return ESMF_SUCCESS" 
+ write(name, *) "Adding a long value character Attribute to mobj Test" 
+ call ESMF_Test((rc==ESMF_SUCCESS), name, failMsg, result, ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ 
+ !---------------------------------------------------------------------- 
+ ! ASCII characters 
+ !---------------------------------------------------------------------- 
+ !EX_UTest 
+ ! Add ASCII characters to an Attribute on an Array Test 
+ correct = .true. 
+ inASCII = "!""#$%&'()*+,-./0123456789:;<=>?" 
+ inASCII = ESMF_StringConcat (trim (inASCII), "ABCDEFGHIJKLMNOPQRSTUVWXYZ") 
+ inASCII = ESMF_StringConcat (trim (inASCII), "[\]#_`") 
+ inASCII = ESMF_StringConcat (trim (inASCII), "abcdefghijklmnopqrstuvwxyz") 
+ inASCII = ESMF_StringConcat (trim (inASCII), "{'}~") 
+ do i=1,len_trim(inASCII) 
+ call ESMF_AttributeSet(grid, name=inASCII(i:i), value=inASCII, rc=rc) 
+ if (rc /= ESMF_SUCCESS) then 
+ correct = .false. 
+ endif 
+ call ESMF_AttributeGet(grid, name=inASCII(i:i), value=outASCII, rc=rc) 
+ if (rc /= ESMF_SUCCESS) correct = .false. 
+ if (inASCII /= outASCII) correct = .false. 
+ enddo 
+ 
+ write(failMsg, *) "Did not return ESMF_SUCCESS" 
+ write(name, *) "Use all ASCII characters as Attribute names on an Array Test" 
+ call ESMF_Test((correct .eqv. .true.), name, failMsg, result, ESMF_SRCLINE) 
+ 
+ !---------------------------------------------------------------------- 
+ ! Get an Attribute which was not set 
+ !---------------------------------------------------------------------- 
+ 
+ !EX_UTest 
+ ! Get an ESMF_I4 Attribute from a Grid Test 
+ call ESMF_AttributeGet(grid, name="NotHere", value=outI4, rc=rc) 
+ write(failMsg, *) "Did not return ESMF_RC_ATTR_NOTSET" 
+ write(name, *) "Getting a nonexistent Attribute from mobj Test" 
+ call ESMF_Test((rc==ESMF_RC_ATTR_NOTSET), & 
+ name, failMsg, result, ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ 
+ !---------------------------------------------------------------------- 
+ ! ESMF_I4 
+ !---------------------------------------------------------------------- 
+ inI4 = 4 
+ !EX_UTest 
+ ! Add an ESMF_I4 Attribute to a Grid Test 
+ call ESMF_AttributeSet(grid, name="AttrI4", value=inI4, rc=rc) 
+ write(failMsg, *) "Did not return ESMF_SUCCESS" 
+ write(name, *) "Adding an ESMF_I4 Attribute to mobj Test" 
+ call ESMF_Test((rc==ESMF_SUCCESS), name, failMsg, result, ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ 
+ !EX_UTest 
+ ! Get an ESMF_I4 Attribute from a Grid Test 
+ call ESMF_AttributeGet(grid, name="AttrI4", value=outI4, & 
+ isPresent=isPresent, rc=rc) 
+ write(failMsg, *) "Did not return ESMF_SUCCESS or wrong value" 
+ write(name, *) "Getting an ESMF_I4 Attribute from mobj Test" 
+ call ESMF_Test((rc==ESMF_SUCCESS) & 
+ .and.(inI4==outI4) & 
+ .and.(isPresent.eqv..true.), & 
+ name, failMsg, result, ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ 
+ !EX_UTest 
+ ! Remove an Attribute on a Grid Test 
+ call ESMF_AttributeRemove(grid, name="AttrI4", rc=rc) 
+ write(failMsg, *) "Did not return ESMF_SUCCESS" 
+ write(name, *) "Removing an ESMF_I4 Attribute on mobj Test" 
+ call ESMF_Test((rc==ESMF_SUCCESS), name, failMsg, result, ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ 
+ !EX_UTest 
+ ! Remove an Attribute on a Grid Test, again 
+ call ESMF_AttributeRemove(grid, name="AttrI4", rc=rc) 
+ write(failMsg, *) "Did not return ESMC_RC_NOT_FOUND" 
+ write(name, *) "Removing an ESMF_I4 Attribute on mobj Test, again" 
+ call ESMF_Test((rc==ESMC_RC_NOT_FOUND), name, failMsg, result, & 
+ ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ 
+ defaultI4 = 7 
+ !EX_UTest 
+ ! Get an ESMF_I4 Attribute from a Grid Test 
+ call ESMF_AttributeGet(grid, name="AttrI4", value=dfltoutI4, & 
+ defaultvalue=defaultI4, rc=rc) 
+ write(failMsg, *) "Did not return ESMF_SUCCESS or wrong value" 
+ write(name, *) "Getting a default ESMF_I4 Attribute from mobj Test" 
+ call ESMF_Test((rc==ESMF_SUCCESS).and.(defaultI4==dfltoutI4), & 
+ name, failMsg, result, ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ 
+ !EX_UTest 
+ ! Get an ESMF_I4 Attribute isPresent flag from a Grid Test 
+ call ESMF_AttributeGet(grid, name="AttrI4", value=outI4, & 
+ isPresent=isPresent, rc=rc) 
+ write(failMsg, *) "Did not return ESMF_SUCCESS or wrong value" 
+ write(name, *) "Getting an ESMF_I4 Attribute isPresent flag from mobj Test" 
+ call ESMF_Test((rc==ESMF_RC_ATTR_NOTSET) & 
+ .and.(isPresent.eqv..false.), & 
+ name, failMsg, result, ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ 
+ !EX_UTest 
+ ! Get an ESMF_I4 Attribute error from a Grid Test 
+ call ESMF_AttributeGet(grid, name="AttrI4", value=outI4, rc=rc) 
+ write(failMsg, *) "Did not return ESMF_SUCCESS or wrong value" 
+ write(name, *) "Getting an ESMF_I4 Attribute error from mobj Test" 
+ call ESMF_Test((rc==ESMF_RC_ATTR_NOTSET), name, failMsg, result, ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ 
+ !---------------------------------------------------------------------- 
+ ! Constant value from variable 
+ !---------------------------------------------------------------------- 
+ !EX_UTest 
+ ! Add a constant numerical Attribute to a Grid Test 
+ call ESMF_AttributeSet(grid, name="ConstantI4", value=42, rc=rc) 
+ write(failMsg, *) "Did not return ESMF_SUCCESS" 
+ write(name, *) "Adding a constant I4 Attribute to mobj Test" 
+ call ESMF_Test((rc==ESMF_SUCCESS), name, failMsg, result, ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ 
+ !EX_UTest 
+ ! Get a constant numerical Attribute from a Grid Test 
+ call ESMF_AttributeGet(grid, name="ConstantI4", value=outConstantI4, rc=rc) 
+ write(failMsg, *) "Did not return ESMF_SUCCESS or wrong value" 
+ write(name, *) "Getting a constant I4 Attribute from mobj Test" 
+ call ESMF_Test((rc==ESMF_SUCCESS).and.(42==outConstantI4), & 
+ name, failMsg, result, ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ 
+ !---------------------------------------------------------------------- 
+ ! ESMF_I4 list 
+ !---------------------------------------------------------------------- 
+ inI4l = (/1,2,3/) 
+ !EX_UTest 
+ ! Add an ESMF_I4 list Attribute to a Grid Test 
+ call ESMF_AttributeSet(grid, name="AttrI4l", & 
+ valueList=inI4l, rc=rc) 
+ write(failMsg, *) "Did not return ESMF_SUCCESS" 
+ write(name, *) "Adding an ESMF_I4l Attribute to mobj Test" 
+ call ESMF_Test((rc==ESMF_SUCCESS), name, failMsg, result, ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ 
+ !EX_UTest 
+ ! Get an ESMF_I4 list Attribute from a Grid Test 
+ call ESMF_AttributeGet(grid, name="AttrI4l", & 
+ valueList=outI4l, isPresent=isPresent, rc=rc) 
+ write(failMsg, *) "Did not return ESMF_SUCCESS or wrong value" 
+ write(name, *) "Getting an ESMF_I4l Attribute from mobj Test" 
+ call ESMF_Test((rc==ESMF_SUCCESS) & 
+ .and. all (inI4l==outI4l) & 
+ .and.(isPresent.eqv..true.), & 
+ name, failMsg, result, ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ 
+ !EX_UTest 
+ ! Remove an Attribute on a Grid Test 
+ call ESMF_AttributeRemove(grid, name="AttrI4l", rc=rc) 
+ write(failMsg, *) "Did not return ESMF_SUCCESS" 
+ write(name, *) "Removing an ESMF_I4l Attribute on mobj Test" 
+ call ESMF_Test((rc==ESMF_SUCCESS), name, failMsg, result, ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ 
+ !EX_UTest 
+ ! Remove an Attribute on a Grid Test, again 
+ call ESMF_AttributeRemove(grid, name="AttrI4l", rc=rc) 
+ write(failMsg, *) "Did not return ESMC_RC_NOT_FOUND" 
+ write(name, *) "Removing an ESMF_I4l Attribute on mobj Test, again" 
+ call ESMF_Test((rc==ESMC_RC_NOT_FOUND), name, failMsg, result, & 
+ ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ 
+ defaultI4l = (/4,2,7/) 
+ !EX_UTest 
+ ! Get an ESMF_I4 list Attribute from a Grid Test 
+ call ESMF_AttributeGet(grid, name="AttrI4l", & 
+ valueList=dfltoutI4l, defaultvalueList=defaultI4l, rc=rc) 
+ write(failMsg, *) "Did not return ESMF_SUCCESS or wrong value" 
+ write(name, *) "Getting a default ESMF_I4l Attribute from mobj Test" 
+ call ESMF_Test((rc==ESMF_SUCCESS).and. all (defaultI4l==dfltoutI4l), & 
+ name, failMsg, result, ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ 
+ defaultI4lWrong = (/6,7,8,9/) 
+ !EX_UTest 
+ ! Get a I4 list default Attribute on a Grid Test 
+ call ESMF_AttributeGet(grid, name="AttrI4l", & 
+ valueList=dfltOutI4l, defaultvalueList=defaultI4lWrong, rc=rc) 
+ write(failMsg, *) "Did not return ESMF_SUCCESS" 
+ write(name, *) "Getting a wrong sized default Attribute I4 list from mobj test" 
+ call ESMF_Test((rc==ESMF_SUCCESS) .and. & 
+ all (dfltOutI4l==defaultI4lWrong(1:size(DfltOutI4l))), & 
+ name, failMsg, result, ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ 
+ !EX_UTest 
+ items = 3 
+ ! Get an ESMF_I4 list Attribute isPresent flag and itemCount from a Grid Test 
+ call ESMF_AttributeGet(grid, name="AttrI4l", & 
+ valueList=outI4l, itemCount=items, isPresent=isPresent, rc=rc) 
+ write(failMsg, *) "Did not return ESMF_SUCCESS or wrong value" 
+ write(name, *) "Getting an ESMF_I4l Attribute isPresent flag and itemCount from mobj Test" 
+ call ESMF_Test((rc==ESMF_RC_ATTR_NOTSET) & 
+ .and.(isPresent.eqv..false.) & 
+ .and.(items == 0), & 
+ name, failMsg, result, ESMF_SRCLINE) 
+ !------------------------------------------------------------------------ 
+ 
+ !EX_UTest 
+ ! Get an ESMF_I4 list Attribute isPresent flag from a Grid Test 
+ call ESMF_AttributeGet(grid, name="AttrI4l", & 
+ valueList=outI4l, isPresent=isPresent, rc=rc) 
+ write(failMsg, *) "Did not return ESMF_SUCCESS or wrong value" 
+ write(name, *) "Getting an ESMF_I4l Attribute isPresent flag from mobj Test" 
+ call ESMF_Test((rc==ESMF_RC_ATTR_NOTSET) & 
+ .and.(isPresent.eqv..false.), & 
+ name, failMsg, result, ESMF_SRCLINE) 
+ !------------------------------------------------------------------------ 
+ 
+ !EX_UTest 
+ items = 3 
+ ! Get an ESMF_I4 list Attribute itemCount from a Grid Test 
+ call ESMF_AttributeGet(grid, name="AttrI4l", & 
+ valueList=outI4l, itemCount=items, rc=rc) 
+ write(failMsg, *) "Did not return ESMF_SUCCESS or wrong value" 
+ write(name, *) "Getting an ESMF_I4l Attribute itemCount from mobj Test" 
+ call ESMF_Test((rc==ESMF_RC_ATTR_NOTSET) & 
+ .and.(items == 0), & 
+ name, failMsg, result, ESMF_SRCLINE) 
+ !------------------------------------------------------------------------ 
+ 
+ !EX_UTest 
+ ! Get an ESMF_I4 list Attribute error from a Grid Test 
+ call ESMF_AttributeGet(grid, name="AttrI4l", & 
+ valueList=outI4l, rc=rc) 
+ write(failMsg, *) "Did not return ESMF_SUCCESS or wrong value" 
+ write(name, *) "Getting an ESMF_I4l Attribute error from mobj Test" 
+ call ESMF_Test((rc==ESMF_RC_ATTR_NOTSET), name, failMsg, result, ESMF_SRCLINE) 
+ !------------------------------------------------------------------------ 
+ 
+ !---------------------------------------------------------------------- 
+ ! Constant value from variable 
+ !---------------------------------------------------------------------- 
+ !EX_UTest 
+ ! Add a constant numerical Attribute to a Grid Test 
+ call ESMF_AttributeSet(grid, name="ConstantI4l", & 
+ valueList=(/1,2,3/), rc=rc) 
+ write(failMsg, *) "Did not return ESMF_SUCCESS" 
+ write(name, *) "Adding a constant I4 list Attribute to mobj Test" 
+ call ESMF_Test((rc==ESMF_SUCCESS), name, failMsg, result, ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ 
+ !EX_UTest 
+ ! Get a constant numerical Attribute from a Grid Test 
+ call ESMF_AttributeGet(grid, name="ConstantI4l", & 
+ valueList=outConstantI4l, rc=rc) 
+ write(failMsg, *) "Did not return ESMF_SUCCESS or wrong value" 
+ write(name, *) "Getting a constant I4 list Attribute from mobj Test" 
+ call ESMF_Test((rc==ESMF_SUCCESS).and. all((/1,2,3/)==outConstantI4l), & 
+ name, failMsg, result, ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ 
+ !---------------------------------------------------------------------- 
+ ! ESMF_I8 
+ !---------------------------------------------------------------------- 
+ inI8 = 4 
+ !EX_UTest 
+ ! Add an ESMF_I8 Attribute to a Grid Test 
+ call ESMF_AttributeSet(grid, name="AttrI8", value=inI8, rc=rc) 
+ write(failMsg, *) "Did not return ESMF_SUCCESS" 
+ write(name, *) "Adding an ESMF_I8 Attribute to mobj Test" 
+ call ESMF_Test((rc==ESMF_SUCCESS), name, failMsg, result, ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ 
+ !EX_UTest 
+ ! Get an ESMF_I8 Attribute from a Grid Test 
+ call ESMF_AttributeGet(grid, name="AttrI8", value=outI8, & 
+ isPresent=isPresent, rc=rc) 
+ write(failMsg, *) "Did not return ESMF_SUCCESS or wrong value" 
+ write(name, *) "Getting an ESMF_I8 Attribute from mobj Test" 
+ call ESMF_Test((rc==ESMF_SUCCESS) & 
+ .and.(inI8==outI8) & 
+ .and.(isPresent.eqv..true.), & 
+ name, failMsg, result, ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ 
+ !EX_UTest 
+ ! Remove an Attribute on a Grid Test 
+ call ESMF_AttributeRemove(grid, name="AttrI8", rc=rc) 
+ write(failMsg, *) "Did not return ESMF_SUCCESS" 
+ write(name, *) "Removing an ESMF_I8 Attribute on mobj Test" 
+ call ESMF_Test((rc==ESMF_SUCCESS), name, failMsg, result, ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ 
+ !EX_UTest 
+ ! Remove an Attribute on a Grid Test, again 
+ call ESMF_AttributeRemove(grid, name="AttrI8", rc=rc) 
+ write(failMsg, *) "Did not return ESMC_RC_NOT_FOUND" 
+ write(name, *) "Removing an ESMF_I8 Attribute on mobj Test, again" 
+ call ESMF_Test((rc==ESMC_RC_NOT_FOUND), name, failMsg, result, & 
+ ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ 
+ defaultI8 = 7 
+ !EX_UTest 
+ ! Get an ESMF_I8 Attribute from a Grid Test 
+ call ESMF_AttributeGet(grid, name="AttrI8", value=dfltoutI8, & 
+ defaultvalue=defaultI8, rc=rc) 
+ write(failMsg, *) "Did not return ESMF_SUCCESS or wrong value" 
+ write(name, *) "Getting a default ESMF_I8 Attribute from mobj Test" 
+ call ESMF_Test((rc==ESMF_SUCCESS).and.(defaultI8==dfltoutI8), & 
+ name, failMsg, result, ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ 
+ !EX_UTest 
+ ! Get an ESMF_I8 Attribute isPresent flag from a Grid Test 
+ call ESMF_AttributeGet(grid, name="AttrI8", value=outI8, & 
+ isPresent=isPresent, rc=rc) 
+ write(failMsg, *) "Did not return ESMF_SUCCESS or wrong value" 
+ write(name, *) "Getting an ESMF_I8 Attribute isPresent flag from mobj Test" 
+ call ESMF_Test((rc==ESMF_RC_ATTR_NOTSET) & 
+ .and.(isPresent.eqv..false.), & 
+ name, failMsg, result, ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ 
+ !EX_UTest 
+ ! Get an ESMF_I8 Attribute error from a Grid Test 
+ call ESMF_AttributeGet(grid, name="AttrI8", value=outI8, rc=rc) 
+ write(failMsg, *) "Did not return ESMF_SUCCESS or wrong value" 
+ write(name, *) "Getting an ESMF_I8 Attribute error from mobj Test" 
+ call ESMF_Test((rc==ESMF_RC_ATTR_NOTSET), name, failMsg, result, ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ 
+ !---------------------------------------------------------------------- 
+ ! Constant value from variable 
+ !---------------------------------------------------------------------- 
+ !EX_UTest 
+ ! Add a constant numerical Attribute to a Grid Test 
+ call ESMF_AttributeSet(grid, name="ConstantI8", value=42, rc=rc) 
+ write(failMsg, *) "Did not return ESMF_SUCCESS" 
+ write(name, *) "Adding a constant I8 Attribute to mobj Test" 
+ call ESMF_Test((rc==ESMF_SUCCESS), name, failMsg, result, ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ 
+ !EX_UTest 
+ ! Get a constant numerical Attribute from a Grid Test 
+ ! expect fail because this will default to I4 
+ call ESMF_AttributeGet(grid, name="ConstantI8", value=outConstantI8, rc=rc) 
+ write(failMsg, *) "Did not return ESMC_RC_ATTR_WRONGTYPE" 
+ write(name, *) "Getting a constant I8 Attribute from mobj Test" 
+ call ESMF_Test((rc==ESMC_RC_ATTR_WRONGTYPE), & 
+ name, failMsg, result, ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ 
+ !---------------------------------------------------------------------- 
+ ! ESMF_I8 list 
+ !---------------------------------------------------------------------- 
+ inI8l = (/1,2,3/) 
+ !EX_UTest 
+ ! Add an ESMF_I8 list Attribute to a Grid Test 
+ call ESMF_AttributeSet(grid, name="AttrI8l", & 
+ valueList=inI8l, rc=rc) 
+ write(failMsg, *) "Did not return ESMF_SUCCESS" 
+ write(name, *) "Adding an ESMF_I8l Attribute to mobj Test" 
+ call ESMF_Test((rc==ESMF_SUCCESS), name, failMsg, result, ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ 
+ !EX_UTest 
+ ! Get an ESMF_I8 list Attribute from a Grid Test 
+ call ESMF_AttributeGet(grid, name="AttrI8l", & 
+ valueList=outI8l, isPresent=isPresent, rc=rc) 
+ write(failMsg, *) "Did not return ESMF_SUCCESS or wrong value" 
+ write(name, *) "Getting an ESMF_I8l Attribute from mobj Test" 
+ call ESMF_Test((rc==ESMF_SUCCESS) & 
+ .and. all (inI8l==outI8l) & 
+ .and.(isPresent.eqv..true.), & 
+ name, failMsg, result, ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ 
+ !EX_UTest 
+ ! Remove an Attribute on a Grid Test 
+ call ESMF_AttributeRemove(grid, name="AttrI8l", rc=rc) 
+ write(failMsg, *) "Did not return ESMF_SUCCESS" 
+ write(name, *) "Removing an ESMF_I8l Attribute on mobj Test" 
+ call ESMF_Test((rc==ESMF_SUCCESS), name, failMsg, result, ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ 
+ !EX_UTest 
+ ! Remove an Attribute on a Grid Test, again 
+ call ESMF_AttributeRemove(grid, name="AttrI8l", rc=rc) 
+ write(failMsg, *) "Did not return ESMC_RC_NOT_FOUND" 
+ write(name, *) "Removing an ESMF_I8l Attribute on mobj Test, again" 
+ call ESMF_Test((rc==ESMC_RC_NOT_FOUND), name, failMsg, result, & 
+ ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ 
+ defaultI8l = (/4,2,7/) 
+ !EX_UTest 
+ ! Get an ESMF_I8 list Attribute from a Grid Test 
+ call ESMF_AttributeGet(grid, name="AttrI8l", & 
+ valueList=dfltoutI8l, defaultvalueList=defaultI8l, rc=rc) 
+ write(failMsg, *) "Did not return ESMF_SUCCESS or wrong value" 
+ write(name, *) "Getting a default ESMF_I8l Attribute from mobj Test" 
+ call ESMF_Test((rc==ESMF_SUCCESS).and. all (defaultI8l==dfltoutI8l), & 
+ name, failMsg, result, ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ 
+ defaultI8lWrong = (/6,7,8,9/) 
+ !EX_UTest 
+ ! Get a I8 list default Attribute on a Grid Test 
+ call ESMF_AttributeGet(grid, name="AttrI8l", & 
+ valueList=dfltOutI8l, defaultvalueList=defaultI8lWrong, rc=rc) 
+ write(failMsg, *) "Did not return ESMF_SUCCESS" 
+ write(name, *) "Getting a wrong sized default Attribute I8 list from mobj test" 
+ call ESMF_Test((rc==ESMF_SUCCESS) .and. & 
+ all (dfltOutI8l==defaultI8lWrong(1:size(DfltOutI8l))), & 
+ name, failMsg, result, ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ 
+ !EX_UTest 
+ items = 3 
+ ! Get an ESMF_I8 list Attribute isPresent flag and itemCount from a Grid Test 
+ call ESMF_AttributeGet(grid, name="AttrI8l", & 
+ valueList=outI8l, itemCount=items, isPresent=isPresent, rc=rc) 
+ write(failMsg, *) "Did not return ESMF_SUCCESS or wrong value" 
+ write(name, *) "Getting an ESMF_I8l Attribute isPresent flag and itemCount from mobj Test" 
+ call ESMF_Test((rc==ESMF_RC_ATTR_NOTSET) & 
+ .and.(isPresent.eqv..false.) & 
+ .and.(items == 0), & 
+ name, failMsg, result, ESMF_SRCLINE) 
+ !------------------------------------------------------------------------ 
+ 
+ !EX_UTest 
+ ! Get an ESMF_I8 list Attribute isPresent flag from a Grid Test 
+ call ESMF_AttributeGet(grid, name="AttrI8l", & 
+ valueList=outI8l, isPresent=isPresent, rc=rc) 
+ write(failMsg, *) "Did not return ESMF_SUCCESS or wrong value" 
+ write(name, *) "Getting an ESMF_I8l Attribute isPresent flag from mobj Test" 
+ call ESMF_Test((rc==ESMF_RC_ATTR_NOTSET) & 
+ .and.(isPresent.eqv..false.), & 
+ name, failMsg, result, ESMF_SRCLINE) 
+ !------------------------------------------------------------------------ 
+ 
+ !EX_UTest 
+ items = 3 
+ ! Get an ESMF_I8 list Attribute itemCount from a Grid Test 
+ call ESMF_AttributeGet(grid, name="AttrI8l", & 
+ valueList=outI8l, itemCount=items, rc=rc) 
+ write(failMsg, *) "Did not return ESMF_SUCCESS or wrong value" 
+ write(name, *) "Getting an ESMF_I8l Attribute itemCount from mobj Test" 
+ call ESMF_Test((rc==ESMF_RC_ATTR_NOTSET) & 
+ .and.(items == 0), & 
+ name, failMsg, result, ESMF_SRCLINE) 
+ !------------------------------------------------------------------------ 
+ 
+ !EX_UTest 
+ ! Get an ESMF_I8 list Attribute error from a Grid Test 
+ call ESMF_AttributeGet(grid, name="AttrI8l", & 
+ valueList=outI8l, rc=rc) 
+ write(failMsg, *) "Did not return ESMF_SUCCESS or wrong value" 
+ write(name, *) "Getting an ESMF_I8l Attribute error from mobj Test" 
+ call ESMF_Test((rc==ESMF_RC_ATTR_NOTSET), name, failMsg, result, ESMF_SRCLINE) 
+ !------------------------------------------------------------------------ 
+ 
+ !---------------------------------------------------------------------- 
+ ! Constant value from variable 
+ !---------------------------------------------------------------------- 
+ !EX_UTest 
+ ! Add a constant numerical Attribute to a Grid Test 
+ call ESMF_AttributeSet(grid, name="ConstantI8l", & 
+ valueList=(/1,2,3/), rc=rc) 
+ write(failMsg, *) "Did not return ESMF_SUCCESS" 
+ write(name, *) "Adding a constant I8 list Attribute to mobj Test" 
+ call ESMF_Test((rc==ESMF_SUCCESS), name, failMsg, result, ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ 
+ !EX_UTest 
+ ! Get a constant numerical Attribute from a Grid Test 
+ ! expect fail because this will default to I4 
+ call ESMF_AttributeGet(grid, name="ConstantI8l", & 
+ valueList=outConstantI8l, rc=rc) 
+ write(failMsg, *) "Did not return ESMC_RC_ATTR_WRONGTYPE" 
+ write(name, *) "Getting a constant I8 list Attribute from mobj Test" 
+ call ESMF_Test((rc==ESMC_RC_ATTR_WRONGTYPE), & 
+ name, failMsg, result, ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ 
+ !---------------------------------------------------------------------- 
+ ! ESMF_R4 
+ !---------------------------------------------------------------------- 
+ inR4 = 4 
+ !EX_UTest 
+ ! Add an ESMF_R4 Attribute to a Grid Test 
+ call ESMF_AttributeSet(grid, name="AttrR4", value=inR4, rc=rc) 
+ write(failMsg, *) "Did not return ESMF_SUCCESS" 
+ write(name, *) "Adding an ESMF_R4 Attribute to mobj Test" 
+ call ESMF_Test((rc==ESMF_SUCCESS), name, failMsg, result, ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ 
+ !EX_UTest 
+ ! Get an ESMF_R4 Attribute from a Grid Test 
+ call ESMF_AttributeGet(grid, name="AttrR4", value=outR4, & 
+ isPresent=isPresent, rc=rc) 
+ write(failMsg, *) "Did not return ESMF_SUCCESS or wrong value" 
+ write(name, *) "Getting an ESMF_R4 Attribute from mobj Test" 
+ call ESMF_Test((rc==ESMF_SUCCESS) & 
+ .and.(inR4==outR4) & 
+ .and.(isPresent.eqv..true.), & 
+ name, failMsg, result, ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ 
+ !EX_UTest 
+ ! Remove an Attribute on a Grid Test 
+ call ESMF_AttributeRemove(grid, name="AttrR4", rc=rc) 
+ write(failMsg, *) "Did not return ESMF_SUCCESS" 
+ write(name, *) "Removing an ESMF_R4 Attribute on mobj Test" 
+ call ESMF_Test((rc==ESMF_SUCCESS), name, failMsg, result, ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ 
+ !EX_UTest 
+ ! Remove an Attribute on a Grid Test, again 
+ call ESMF_AttributeRemove(grid, name="AttrR4", rc=rc) 
+ write(failMsg, *) "Did not return ESMC_RC_NOT_FOUND" 
+ write(name, *) "Removing an ESMF_R4 Attribute on mobj Test, again" 
+ call ESMF_Test((rc==ESMC_RC_NOT_FOUND), name, failMsg, result, & 
+ ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ 
+ defaultR4 = 7 
+ !EX_UTest 
+ ! Get an ESMF_R4 Attribute from a Grid Test 
+ call ESMF_AttributeGet(grid, name="AttrR4", value=dfltoutR4, & 
+ defaultvalue=defaultR4, rc=rc) 
+ write(failMsg, *) "Did not return ESMF_SUCCESS or wrong value" 
+ write(name, *) "Getting a default ESMF_R4 Attribute from mobj Test" 
+ call ESMF_Test((rc==ESMF_SUCCESS).and.(defaultR4==dfltoutR4), & 
+ name, failMsg, result, ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ 
+ !EX_UTest 
+ ! Get an ESMF_R4 Attribute isPresent flag from a Grid Test 
+ call ESMF_AttributeGet(grid, name="AttrR4", value=outR4, & 
+ isPresent=isPresent, rc=rc) 
+ write(failMsg, *) "Did not return ESMF_SUCCESS or wrong value" 
+ write(name, *) "Getting an ESMF_R4 Attribute isPresent flag from mobj Test" 
+ call ESMF_Test((rc==ESMF_RC_ATTR_NOTSET) & 
+ .and.(isPresent.eqv..false.), & 
+ name, failMsg, result, ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ 
+ !EX_UTest 
+ ! Get an ESMF_R4 Attribute error from a Grid Test 
+ call ESMF_AttributeGet(grid, name="AttrR4", value=outR4, rc=rc) 
+ write(failMsg, *) "Did not return ESMF_SUCCESS or wrong value" 
+ write(name, *) "Getting an ESMF_R4 Attribute error from mobj Test" 
+ call ESMF_Test((rc==ESMF_RC_ATTR_NOTSET), name, failMsg, result, ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ 
+ !---------------------------------------------------------------------- 
+ ! Constant value from variable 
+ !---------------------------------------------------------------------- 
+ !EX_UTest 
+ ! Add a constant numerical Attribute to a Grid Test 
+ call ESMF_AttributeSet(grid, name="ConstantR4", value=4.2, rc=rc) 
+ write(failMsg, *) "Did not return ESMF_SUCCESS" 
+ write(name, *) "Adding a constant R4 Attribute to mobj Test" 
+ call ESMF_Test((rc==ESMF_SUCCESS), name, failMsg, result, ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ 
+ !EX_UTest 
+ ! Get a constant numerical Attribute from a Grid Test 
+ call ESMF_AttributeGet(grid, name="ConstantR4", value=outConstantR4, rc=rc) 
+ write(failMsg, *) "Did not return ESMF_SUCCESS or wrong value" 
+ write(name, *) "Getting a constant R4 Attribute from mobj Test" 
+ call ESMF_Test((rc==ESMF_SUCCESS).and.(4.2==outConstantR4), & 
+ name, failMsg, result, ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ 
+ !---------------------------------------------------------------------- 
+ ! ESMF_R4 list 
+ !---------------------------------------------------------------------- 
+ inR4l = (/1,2,3/) 
+ !EX_UTest 
+ ! Add an ESMF_R4 list Attribute to a Grid Test 
+ call ESMF_AttributeSet(grid, name="AttrR4l", & 
+ valueList=inR4l, rc=rc) 
+ write(failMsg, *) "Did not return ESMF_SUCCESS" 
+ write(name, *) "Adding an ESMF_R4l Attribute to mobj Test" 
+ call ESMF_Test((rc==ESMF_SUCCESS), name, failMsg, result, ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ 
+ !EX_UTest 
+ ! Get an ESMF_R4 list Attribute from a Grid Test 
+ call ESMF_AttributeGet(grid, name="AttrR4l", & 
+ valueList=outR4l, isPresent=isPresent, rc=rc) 
+ write(failMsg, *) "Did not return ESMF_SUCCESS or wrong value" 
+ write(name, *) "Getting an ESMF_R4l Attribute from mobj Test" 
+ call ESMF_Test((rc==ESMF_SUCCESS) & 
+ .and. all (inR4l==outR4l) & 
+ .and.(isPresent.eqv..true.), & 
+ name, failMsg, result, ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ 
+ !EX_UTest 
+ ! Remove an Attribute on a Grid Test 
+ call ESMF_AttributeRemove(grid, name="AttrR4l", rc=rc) 
+ write(failMsg, *) "Did not return ESMF_SUCCESS" 
+ write(name, *) "Removing an ESMF_R4l Attribute on mobj Test" 
+ call ESMF_Test((rc==ESMF_SUCCESS), name, failMsg, result, ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ 
+ !EX_UTest 
+ ! Remove an Attribute on a Grid Test, again 
+ call ESMF_AttributeRemove(grid, name="AttrR4l", rc=rc) 
+ write(failMsg, *) "Did not return ESMC_RC_NOT_FOUND" 
+ write(name, *) "Removing an ESMF_R4l Attribute on mobj Test, again" 
+ call ESMF_Test((rc==ESMC_RC_NOT_FOUND), name, failMsg, result, & 
+ ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ 
+ defaultR4l = (/7,8,9/) 
+ !EX_UTest 
+ ! Get an ESMF_R4 list Attribute from a Grid Test 
+ call ESMF_AttributeGet(grid, name="AttrR4l", & 
+ valueList=dfltoutR4l, defaultvalueList=defaultR4l, rc=rc) 
+ write(failMsg, *) "Did not return ESMF_SUCCESS or wrong value" 
+ write(name, *) "Getting a default ESMF_R4l Attribute from mobj Test" 
+ call ESMF_Test((rc==ESMF_SUCCESS).and. all (defaultR4l==dfltoutR4l), & 
+ name, failMsg, result, ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ 
+ defaultR4lWrong = (/6,7,8,9/) 
+ !EX_UTest 
+ ! Get a R4 list default Attribute on a Grid Test 
+ call ESMF_AttributeGet(grid, name="AttrR4l", & 
+ valueList=dfltOutR4l, defaultvalueList=defaultR4lWrong, rc=rc) 
+ write(failMsg, *) "Did not return ESMF_SUCCESS" 
+ write(name, *) "Getting a wrong sized default Attribute R4 list from mobj test" 
+ call ESMF_Test((rc==ESMF_SUCCESS) .and. & 
+ all (dfltOutR4l==defaultR4lWrong(1:size(DfltOutR4l))), & 
+ name, failMsg, result, ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ 
+ !EX_UTest 
+ items = 3 
+ ! Get an ESMF_R4 list Attribute isPresent flag and itemCount from a Grid Test 
+ call ESMF_AttributeGet(grid, name="AttrR4l", & 
+ valueList=outR4l, itemCount=items, isPresent=isPresent, rc=rc) 
+ write(failMsg, *) "Did not return ESMF_SUCCESS or wrong value" 
+ write(name, *) "Getting an ESMF_R4l Attribute isPresent flag and itemCount from mobj Test" 
+ call ESMF_Test((rc==ESMF_RC_ATTR_NOTSET) & 
+ .and.(isPresent.eqv..false.) & 
+ .and.(items == 0), & 
+ name, failMsg, result, ESMF_SRCLINE) 
+ !------------------------------------------------------------------------ 
+ 
+ !EX_UTest 
+ ! Get an ESMF_R4 list Attribute isPresent flag from a Grid Test 
+ call ESMF_AttributeGet(grid, name="AttrR4l", & 
+ valueList=outR4l, isPresent=isPresent, rc=rc) 
+ write(failMsg, *) "Did not return ESMF_SUCCESS or wrong value" 
+ write(name, *) "Getting an ESMF_R4l Attribute isPresent flag from mobj Test" 
+ call ESMF_Test((rc==ESMF_RC_ATTR_NOTSET) & 
+ .and.(isPresent.eqv..false.), & 
+ name, failMsg, result, ESMF_SRCLINE) 
+ !------------------------------------------------------------------------ 
+ 
+ !EX_UTest 
+ items = 3 
+ ! Get an ESMF_R4 list Attribute itemCount from a Grid Test 
+ call ESMF_AttributeGet(grid, name="AttrR4l", & 
+ valueList=outR4l, itemCount=items, rc=rc) 
+ write(failMsg, *) "Did not return ESMF_SUCCESS or wrong value" 
+ write(name, *) "Getting an ESMF_R4l Attribute itemCount from mobj Test" 
+ call ESMF_Test((rc==ESMF_RC_ATTR_NOTSET) & 
+ .and.(items == 0), & 
+ name, failMsg, result, ESMF_SRCLINE) 
+ !------------------------------------------------------------------------ 
+ 
+ !EX_UTest 
+ ! Get an ESMF_R4 list Attribute error from a Grid Test 
+ call ESMF_AttributeGet(grid, name="AttrR4l", & 
+ valueList=outR4l, rc=rc) 
+ write(failMsg, *) "Did not return ESMF_SUCCESS or wrong value" 
+ write(name, *) "Getting an ESMF_R4l Attribute error from mobj Test" 
+ call ESMF_Test((rc==ESMF_RC_ATTR_NOTSET), name, failMsg, result, ESMF_SRCLINE) 
+ !------------------------------------------------------------------------ 
+ 
+ !---------------------------------------------------------------------- 
+ ! Constant value from variable 
+ !---------------------------------------------------------------------- 
+ !EX_UTest 
+ ! Add a constant numerical Attribute to a Grid Test 
+ call ESMF_AttributeSet(grid, name="ConstantR4l", & 
+ valueList=(/1.1,2.2,3.3/), rc=rc) 
+ write(failMsg, *) "Did not return ESMF_SUCCESS" 
+ write(name, *) "Adding a constant R4 list Attribute to mobj Test" 
+ call ESMF_Test((rc==ESMF_SUCCESS), name, failMsg, result, ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ 
+ !EX_UTest 
+ ! Get a constant numerical Attribute from a Grid Test 
+ call ESMF_AttributeGet(grid, name="ConstantR4l", & 
+ valueList=outConstantR4l, rc=rc) 
+ write(failMsg, *) "Did not return ESMF_SUCCESS or wrong value" 
+ write(name, *) "Getting a constant R4 list Attribute from mobj Test" 
+ call ESMF_Test((rc==ESMF_SUCCESS).and. all((/1.1,2.2,3.3/)==outConstantR4l), & 
+ name, failMsg, result, ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ 
+#endif 
+ 
+ !---------------------------------------------------------------------- 
+ ! ESMF_R8 
+ !---------------------------------------------------------------------- 
+ inR8 = 4 
+ !NEX_UTest 
+ ! Add an ESMF_R8 Attribute to a Grid Test 
+ call ESMF_AttributeSet(grid, name="AttrR8", value=inR8, rc=rc) 
+ write(failMsg, *) "Did not return ESMF_SUCCESS" 
+ write(name, *) "Adding an ESMF_R8 Attribute to mobj Test" 
+ call ESMF_Test((rc==ESMF_SUCCESS), name, failMsg, result, ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ 
+ !NEX_UTest 
+ ! Get an ESMF_R8 Attribute from a Grid Test 
+ call ESMF_AttributeGet(grid, name="AttrR8", value=outR8, & 
+ isPresent=isPresent, rc=rc) 
+ write(failMsg, *) "Did not return ESMF_SUCCESS or wrong value" 
+ write(name, *) "Getting an ESMF_R8 Attribute from mobj Test" 
+ call ESMF_Test((rc==ESMF_SUCCESS) & 
+ .and.(inR8==outR8) & 
+ .and.(isPresent.eqv..true.), & 
+ name, failMsg, result, ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ 
+ !NEX_UTest 
+ ! Remove an Attribute on a Grid Test 
+ call ESMF_AttributeRemove(grid, name="AttrR8", rc=rc) 
+ write(failMsg, *) "Did not return ESMF_SUCCESS" 
+ write(name, *) "Removing an ESMF_R8 Attribute on mobj Test" 
+ call ESMF_Test((rc==ESMF_SUCCESS), name, failMsg, result, ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ 
+ !NEX_UTest 
+ ! Remove an Attribute on a Grid Test, again 
+ call ESMF_AttributeRemove(grid, name="AttrR8", rc=rc) 
+ write(failMsg, *) "Did not return ESMC_RC_NOT_FOUND" 
+ write(name, *) "Removing an ESMF_R8 Attribute on mobj Test, again" 
+ call ESMF_Test((rc==ESMC_RC_NOT_FOUND), name, failMsg, result, & 
+ ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ 
+ defaultR8 = 7 
+ !NEX_UTest 
+ ! Get an ESMF_R8 Attribute from a Grid Test 
+ call ESMF_AttributeGet(grid, name="AttrR8", value=dfltoutR8, & 
+ defaultvalue=defaultR8, rc=rc) 
+ write(failMsg, *) "Did not return ESMF_SUCCESS or wrong value" 
+ write(name, *) "Getting a default ESMF_R8 Attribute from mobj Test" 
+ call ESMF_Test((rc==ESMF_SUCCESS).and.(defaultR8==dfltoutR8), & 
+ name, failMsg, result, ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ 
+ !NEX_UTest 
+ ! Get an ESMF_R8 Attribute isPresent flag from a Grid Test 
+ call ESMF_AttributeGet(grid, name="AttrR8", value=outR8, & 
+ isPresent=isPresent, rc=rc) 
+ write(failMsg, *) "Did not return ESMF_SUCCESS or wrong value" 
+ write(name, *) "Getting an ESMF_R8 Attribute isPresent flag from mobj Test" 
+ call ESMF_Test((rc==ESMF_RC_ATTR_NOTSET) & 
+ .and.(isPresent.eqv..false.), & 
+ name, failMsg, result, ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ 
+ !NEX_UTest 
+ ! Get an ESMF_R8 Attribute error from a Grid Test 
+ call ESMF_AttributeGet(grid, name="AttrR8", value=outR8, rc=rc) 
+ write(failMsg, *) "Did not return ESMF_SUCCESS or wrong value" 
+ write(name, *) "Getting an ESMF_R8 Attribute error from mobj Test" 
+ call ESMF_Test((rc==ESMF_RC_ATTR_NOTSET), name, failMsg, result, ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ 
+ !---------------------------------------------------------------------- 
+ ! Constant value from variable 
+ !---------------------------------------------------------------------- 
+ !NEX_UTest 
+ ! Add a constant numerical Attribute to a Grid Test 
+ call ESMF_AttributeSet(grid, name="ConstantR8", value=4.2, rc=rc) 
+ write(failMsg, *) "Did not return ESMF_SUCCESS" 
+ write(name, *) "Adding a constant R8 Attribute to mobj Test" 
+ call ESMF_Test((rc==ESMF_SUCCESS), name, failMsg, result, ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ 
+ !NEX_UTest 
+ ! Get a constant numerical Attribute from a Grid Test 
+ ! expect fail because this will default to R4 
+ call ESMF_AttributeGet(grid, name="ConstantR8", value=outConstantR8, rc=rc) 
+ write(failMsg, *) "Did not return ESMC_RC_ATTR_WRONGTYPE" 
+ write(name, *) "Getting a constant R8 Attribute from mobj Test" 
+ call ESMF_Test((rc==ESMC_RC_ATTR_WRONGTYPE), & 
+ name, failMsg, result, ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ 
+ !---------------------------------------------------------------------- 
+ ! ESMF_R8 list 
+ !---------------------------------------------------------------------- 
+ inR8l = (/1,2,3/) 
+ !NEX_UTest 
+ ! Add an ESMF_R8 list Attribute to a Grid Test 
+ call ESMF_AttributeSet(grid, name="AttrR8l", & 
+ valueList=inR8l, rc=rc) 
+ write(failMsg, *) "Did not return ESMF_SUCCESS" 
+ write(name, *) "Adding an ESMF_R8l Attribute to mobj Test" 
+ call ESMF_Test((rc==ESMF_SUCCESS), name, failMsg, result, ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ 
+ !NEX_UTest 
+ ! Get an ESMF_R8 list Attribute from a Grid Test 
+ call ESMF_AttributeGet(grid, name="AttrR8l", & 
+ valueList=outR8l, isPresent=isPresent, rc=rc) 
+ write(failMsg, *) "Did not return ESMF_SUCCESS or wrong value" 
+ write(name, *) "Getting an ESMF_R8l Attribute from mobj Test" 
+ call ESMF_Test((rc==ESMF_SUCCESS) & 
+ .and. all (inR8l==outR8l) & 
+ .and.(isPresent.eqv..true.), & 
+ name, failMsg, result, ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ 
+ !NEX_UTest 
+ ! Remove an Attribute on a Grid Test 
+ call ESMF_AttributeRemove(grid, name="AttrR8l", rc=rc) 
+ write(failMsg, *) "Did not return ESMF_SUCCESS" 
+ write(name, *) "Removing an ESMF_R8l Attribute on mobj Test" 
+ call ESMF_Test((rc==ESMF_SUCCESS), name, failMsg, result, ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ 
+ !NEX_UTest 
+ ! Remove an Attribute on a Grid Test, again 
+ call ESMF_AttributeRemove(grid, name="AttrR8l", rc=rc) 
+ write(failMsg, *) "Did not return ESMC_RC_NOT_FOUND" 
+ write(name, *) "Removing an ESMF_R8l Attribute on mobj Test, again" 
+ call ESMF_Test((rc==ESMC_RC_NOT_FOUND), name, failMsg, result, & 
+ ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ 
+ defaultR8l = (/7,8,9/) 
+ !NEX_UTest 
+ ! Get an ESMF_R8 list Attribute from a Grid Test 
+ call ESMF_AttributeGet(grid, name="AttrR8l", & 
+ valueList=dfltoutR8l, defaultvalueList=defaultR8l, rc=rc) 
+ write(failMsg, *) "Did not return ESMF_SUCCESS or wrong value" 
+ write(name, *) "Getting a default ESMF_R8l Attribute from mobj Test" 
+ call ESMF_Test((rc==ESMF_SUCCESS).and. all (defaultR8l==dfltoutR8l), & 
+ name, failMsg, result, ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ 
+ defaultR8lWrong = (/6,7,8,9/) 
+ !NEX_UTest 
+ ! Get a R8 list default Attribute on a Grid Test 
+ call ESMF_AttributeGet(grid, name="AttrR8l", & 
+ valueList=dfltOutR8l, defaultvalueList=defaultR8lWrong, rc=rc) 
+ write(failMsg, *) "Did not return ESMF_SUCCESS" 
+ write(name, *) "Getting a wrong sized default Attribute R8 list from mobj test" 
+ call ESMF_Test((rc==ESMF_SUCCESS) .and. & 
+ all (dfltOutR8l==defaultR8lWrong(1:size(DfltOutR8l))), & 
+ name, failMsg, result, ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ 
+ !NEX_UTest 
+ items = 3 
+ ! Get an ESMF_R8 list Attribute isPresent flag and itemCount from a Grid Test 
+ call ESMF_AttributeGet(grid, name="AttrR8l", & 
+ valueList=outR8l, itemCount=items, isPresent=isPresent, rc=rc) 
+ write(failMsg, *) "Did not return ESMF_SUCCESS or wrong value" 
+ write(name, *) "Getting an ESMF_R8l Attribute isPresent flag and itemCount from mobj Test" 
+ call ESMF_Test((rc==ESMF_RC_ATTR_NOTSET) & 
+ .and.(isPresent.eqv..false.) & 
+ .and.(items == 0), & 
+ name, failMsg, result, ESMF_SRCLINE) 
+ !------------------------------------------------------------------------ 
+ 
+ !NEX_UTest 
+ ! Get an ESMF_R8 list Attribute isPresent flag from a Grid Test 
+ call ESMF_AttributeGet(grid, name="AttrR8l", & 
+ valueList=outR8l, isPresent=isPresent, rc=rc) 
+ write(failMsg, *) "Did not return ESMF_SUCCESS or wrong value" 
+ write(name, *) "Getting an ESMF_R8l Attribute isPresent flag from mobj Test" 
+ call ESMF_Test((rc==ESMF_RC_ATTR_NOTSET) & 
+ .and.(isPresent.eqv..false.), & 
+ name, failMsg, result, ESMF_SRCLINE) 
+ !------------------------------------------------------------------------ 
+ 
+ !NEX_UTest 
+ items = 3 
+ ! Get an ESMF_R8 list Attribute itemCount from a Grid Test 
+ call ESMF_AttributeGet(grid, name="AttrR8l", & 
+ valueList=outR8l, itemCount=items, rc=rc) 
+ write(failMsg, *) "Did not return ESMF_SUCCESS or wrong value" 
+ write(name, *) "Getting an ESMF_R8l Attribute itemCount from mobj Test" 
+ call ESMF_Test((rc==ESMF_RC_ATTR_NOTSET) & 
+ .and.(items == 0), & 
+ name, failMsg, result, ESMF_SRCLINE) 
+ !------------------------------------------------------------------------ 
+ 
+ !NEX_UTest 
+ ! Get an ESMF_R8 list Attribute error from a Grid Test 
+ call ESMF_AttributeGet(grid, name="AttrR8l", & 
+ valueList=outR8l, rc=rc) 
+ write(failMsg, *) "Did not return ESMF_SUCCESS or wrong value" 
+ write(name, *) "Getting an ESMF_R8l Attribute error from mobj Test" 
+ call ESMF_Test((rc==ESMF_RC_ATTR_NOTSET), name, failMsg, result, ESMF_SRCLINE) 
+ !------------------------------------------------------------------------ 
+ 
+ !---------------------------------------------------------------------- 
+ ! Constant value from variable 
+ !---------------------------------------------------------------------- 
+ !NEX_UTest 
+ ! Add a constant numerical Attribute to a Grid Test 
+ call ESMF_AttributeSet(grid, name="ConstantR8l", & 
+ valueList=(/1,2,3/), rc=rc) 
+ write(failMsg, *) "Did not return ESMF_SUCCESS" 
+ write(name, *) "Adding a constant R8 list Attribute to mobj Test" 
+ call ESMF_Test((rc==ESMF_SUCCESS), name, failMsg, result, ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ 
+ !NEX_UTest 
+ ! Get a constant numerical Attribute from a Grid Test 
+ call ESMF_AttributeGet(grid, name="ConstantR8l", & 
+ valueList=outConstantR8l, rc=rc) 
+ write(failMsg, *) "Did not return ESMC_RC_ATTR_WRONGTYPE" 
+ write(name, *) "Getting a constant R8 list Attribute from mobj Test" 
+ call ESMF_Test((rc==ESMC_RC_ATTR_WRONGTYPE), & 
+ name, failMsg, result, ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ 
+ !---------------------------------------------------------------------- 
+ ! Character 
+ !---------------------------------------------------------------------- 
+ inChar = "charAttribute" 
+ attrName = "char_" 
+ !NEX_UTest 
+ ! Add a char Attribute to a Grid Test 
+ call ESMF_AttributeSet(grid, name=attrname, value=inChar, rc=rc) 
+ write(failMsg, *) "Did not return ESMF_SUCCESS" 
+ write(name, *) "Adding a char Attribute to mobj Test" 
+ call ESMF_Test((rc==ESMF_SUCCESS), name, failMsg, result, ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ 
+ !NEX_UTest 
+ ! Get a char Attribute from a Grid Test 
+ call ESMF_AttributeGet(grid, name=attrname, value=outChar, & 
+ isPresent=isPresent, rc=rc) 
+ write(failMsg, *) "Did not return ESMF_SUCCESS or wrong value" 
+ write(name, *) "Getting a char Attribute from mobj Test" 
+ call ESMF_Test((rc==ESMF_SUCCESS) & 
+ .and. (inChar==outChar) & 
+ .and.(isPresent.eqv..true.), & 
+ name, failMsg, result, ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ 
+ !NEX_UTest 
+ ! Remove an Attribute on a Grid Test 
+ call ESMF_AttributeRemove(grid, name=attrname, rc=rc) 
+ write(failMsg, *) "Did not return ESMF_SUCCESS" 
+ write(name, *) "Removing a char Attribute on mobj Test" 
+ call ESMF_Test((rc==ESMF_SUCCESS), name, failMsg, result, ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ 
+ !NEX_UTest 
+ ! Remove an Attribute on a Grid Test, again 
+ call ESMF_AttributeRemove(grid, name=attrname, rc=rc) 
+ write(failMsg, *) "Did not return ESMC_RC_NOT_FOUND" 
+ write(name, *) "Removing a char Attribute on mobj Test, again" 
+ call ESMF_Test((rc==ESMC_RC_NOT_FOUND), name, failMsg, result, & 
+ ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ 
+ defaultChar = "charAttributeDefault" 
+ !NEX_UTest 
+ ! Get a default char Attribute from a Grid Test 
+ call ESMF_AttributeGet(grid, name=attrname, value=dfltoutChar, & 
+ defaultvalue=defaultChar, rc=rc) 
+ write(failMsg, *) "Did not return ESMF_SUCCESS or wrong value" 
+ write(name, *) "Getting a default char Attribute from mobj Test" 
+ call ESMF_Test((rc==ESMF_SUCCESS).and. (defaultChar==dfltoutChar), & 
+ name, failMsg, result, ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ 
+ !NEX_UTest 
+ ! Get a char Attribute isPresent flag from a Grid Test 
+ call ESMF_AttributeGet(grid, name=attrname, value=outChar, & 
+ isPresent=isPresent, rc=rc) 
+ write(failMsg, *) "Did not return ESMF_SUCCESS or wrong value" 
+ write(name, *) "Getting a char Attribute isPresent flag from mobj Test" 
+ call ESMF_Test((rc==ESMF_RC_ATTR_NOTSET) & 
+ .and.(isPresent.eqv..false.), & 
+ name, failMsg, result, ESMF_SRCLINE) 
+ !------------------------------------------------------------------------ 
+ !NEX_UTest 
+ ! Get a char Attribute error from a Grid Test 
+ call ESMF_AttributeGet(grid, name=attrname, value=outChar, rc=rc) 
+ write(failMsg, *) "Did not return ESMF_SUCCESS or wrong value" 
+ write(name, *) "Getting a char Attribute error from mobj Test" 
+ call ESMF_Test((rc==ESMF_RC_ATTR_NOTSET), name, failMsg, result, ESMF_SRCLINE) 
+ !------------------------------------------------------------------------ 
+ 
+ !---------------------------------------------------------------------- 
+ ! Constant value from variable 
+ !---------------------------------------------------------------------- 
+ !NEX_UTest 
+ ! Add a constant character Attribute to a Grid Test 
+ call ESMF_AttributeSet(grid, name="ConstantChar", value="imacharacter", rc=rc) 
+ write(failMsg, *) "Did not return ESMF_SUCCESS" 
+ write(name, *) "Adding a constant character Attribute to mobj Test" 
+ call ESMF_Test((rc==ESMF_SUCCESS), name, failMsg, result, ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ 
+ !NEX_UTest 
+ ! Get a constant character Attribute from a Grid Test 
+ call ESMF_AttributeGet(grid, name="ConstantChar", value=outConstantChar, rc=rc) 
+ write(failMsg, *) "Did not return ESMF_SUCCESS or wrong value" 
+ write(name, *) "Getting a constant character Attribute from mobj Test" 
+ call ESMF_Test((rc==ESMF_SUCCESS).and.("imacharacter"==outConstantChar), & 
+ name, failMsg, result, ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ 
+#ifdef ESMF_TESTEXHAUSTIVE 
+ 
+ !---------------------------------------------------------------------- 
+ ! Character list 
+ !---------------------------------------------------------------------- 
+ InCharl(1) = "Character String 1" 
+ InCharl(2) = "Character String 2" 
+ InCharl(3) = "Character String 3" 
+ defaultCharl(1) = "Character String 5" 
+ defaultCharl(2) = "Character String 6" 
+ defaultCharl(3) = "Character String 7" 
+ defaultCharlWrong(1) = "Character String 5" 
+ defaultCharlWrong(2) = "Character String 6" 
+ defaultCharlWrong(3) = "Character String 7" 
+ defaultCharlWrong(4) = "Character String 8" 
+ 
+ !EX_UTest 
+ ! Set a char list Attribute on a Grid Test 
+ call ESMF_AttributeSet(grid, name="Charl", & 
+ valueList=InCharl, rc=rc) 
+ write(failMsg, *) "Did not return ESMF_SUCCESS" 
+ write(name, *) "Setting an Attribute char list on mobj test" 
+ call ESMF_Test((rc==ESMF_SUCCESS), name, failMsg, result, ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ 
+ !EX_UTest 
+ ! Get a char list Attribute on a Grid Test 
+ call ESMF_AttributeGet(grid, name="Charl", & 
+ valueList=OutCharl, isPresent=isPresent, rc=rc) 
+ write(failMsg, *) "Did not return ESMF_SUCCESS" 
+ write(name, *) "Getting an Attribute char list from mobj test" 
+ call ESMF_Test((rc==ESMF_SUCCESS) & 
+ .and. all (InCharl==OutCharl) & 
+ .and.(isPresent.eqv..true.), & 
+ name, failMsg, result, ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ 
+ !EX_UTest 
+ ! Remove an Attribute on a Grid Test 
+ call ESMF_AttributeRemove(grid, name="Charl", rc=rc) 
+ write(failMsg, *) "Did not return ESMF_SUCCESS" 
+ write(name, *) "Removing a Character list Attribute on mobj Test" 
+ call ESMF_Test((rc==ESMF_SUCCESS), name, failMsg, result, ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ 
+ !EX_UTest 
+ ! Remove an Attribute on a Grid Test, again 
+ call ESMF_AttributeRemove(grid, name="Charl", rc=rc) 
+ write(failMsg, *) "Did not return ESMC_RC_NOT_FOUND" 
+ write(name, *) "Removing a Character list Attribute on mobj Test, again" 
+ call ESMF_Test((rc==ESMC_RC_NOT_FOUND), name, failMsg, result, ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ 
+ !EX_UTest 
+ ! Get a char list default Attribute on a Grid Test 
+ call ESMF_AttributeGet(grid, name="Charl", & 
+ valueList=DfltOutCharl, defaultvalueList=defaultCharl, rc=rc) 
+ write(failMsg, *) "Did not return ESMF_SUCCESS" 
+ write(name, *) "Getting a default Attribute char list from mobj test" 
+ call ESMF_Test((rc==ESMF_SUCCESS) .and. all (DfltOutCharl == defaultCharl), & 
+ name, failMsg, result, ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ 
+ !EX_UTest 
+ ! Get a char list default Attribute on a Grid Test 
+ call ESMF_AttributeGet(grid, name="Charl", & 
+ valueList=DfltOutCharl, defaultvalueList=defaultCharlWrong, rc=rc) 
+ write(failMsg, *) "Did not return ESMF_SUCCESS" 
+ write(name, *) "Getting a wrong sized default Attribute char list from mobj test" 
+ call ESMF_Test((rc==ESMF_SUCCESS) .and. & 
+ all (DfltOutCharl==defaultCharlWrong(1:size(DfltOutCharl))), & 
+ name, failMsg, result, ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ 
+ !EX_UTest 
+ items = 3 
+ ! Get a char list Attribute isPresent flag and itemCount on a Grid Test 
+ call ESMF_AttributeGet(grid, name="Charl", & 
+ valueList=OutCharl, itemCount=items, isPresent=isPresent, rc=rc) 
+ write(failMsg, *) "Did not return ESMF_SUCCESS" 
+ write(name, *) "Getting an Attribute char list isPresent flag and itemCount from mobj test" 
+ call ESMF_Test((rc==ESMF_RC_ATTR_NOTSET) & 
+ .and. (isPresent.eqv..false.) & 
+ .and. (items==0), & 
+ name, failMsg, result, ESMF_SRCLINE) 
+ !------------------------------------------------------------------------ 
+ 
+ !EX_UTest 
+ ! Get a char list Attribute isPresent flag on a Grid Test 
+ call ESMF_AttributeGet(grid, name="Charl", & 
+ valueList=OutCharl, isPresent=isPresent, rc=rc) 
+ write(failMsg, *) "Did not return ESMF_SUCCESS" 
+ write(name, *) "Getting an Attribute char list isPresent flag from mobj test" 
+ call ESMF_Test((rc==ESMF_RC_ATTR_NOTSET) & 
+ .and. (isPresent.eqv..false.), & 
+ name, failMsg, result, ESMF_SRCLINE) 
+ !------------------------------------------------------------------------ 
+ 
+ !EX_UTest 
+ items = 3 
+ ! Get a char list Attribute itemCount on a Grid Test 
+ call ESMF_AttributeGet(grid, name="Charl", & 
+ valueList=OutCharl, itemCount=items, rc=rc) 
+ write(failMsg, *) "Did not return ESMF_SUCCESS" 
+ write(name, *) "Getting an Attribute char list itemCount from mobj test" 
+ call ESMF_Test((rc==ESMF_RC_ATTR_NOTSET) & 
+ .and. (items==0), & 
+ name, failMsg, result, ESMF_SRCLINE) 
+ !------------------------------------------------------------------------ 
+ 
+ !EX_UTest 
+ ! Get a char list Attribute error on a Grid Test 
+ call ESMF_AttributeGet(grid, name="Charl", & 
+ valueList=OutCharl, rc=rc) 
+ write(failMsg, *) "Did not return ESMF_SUCCESS" 
+ write(name, *) "Getting an Attribute char list error from mobj test" 
+ call ESMF_Test((rc==ESMF_RC_ATTR_NOTSET), name, failMsg, result, ESMF_SRCLINE) 
+ !------------------------------------------------------------------------ 
+ 
+ !---------------------------------------------------------------------- 
+ ! Constant value from variable 
+ !---------------------------------------------------------------------- 
+ !EX_UTest 
+ ! Add a constant character list Attribute to a Grid Test 
+ call ESMF_AttributeSet(grid, name="ConstantCharList", & 
+ valueList=(/"imachar1","imachar2","imachar3"/), rc=rc) 
+ write(failMsg, *) "Did not return ESMF_SUCCESS" 
+ write(name, *) "Adding a constant character list Attribute to mobj Test" 
+ call ESMF_Test((rc==ESMF_SUCCESS), name, failMsg, result, ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ 
+ !EX_UTest 
+ ! Get a constant character list Attribute from a Grid Test 
+ call ESMF_AttributeGet(grid, name="ConstantCharList", & 
+ valueList=outConstantCharl, rc=rc) 
+ write(failMsg, *) "Did not return ESMF_SUCCESS or wrong value" 
+ write(name, *) "Getting a constant character list Attribute from mobj Test" 
+ call ESMF_Test((rc==ESMF_SUCCESS).and. & 
+ all((/"imachar1","imachar2","imachar3"/)==outConstantCharl), & 
+ name, failMsg, result, ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ 
+ !---------------------------------------------------------------------- 
+ ! Logical 
+ !---------------------------------------------------------------------- 
+ attrname = "flag" 
+ inLog = .true. 
+ 
+ !EX_UTest 
+ ! Set a logical attribute - scalar version 
+ call ESMF_AttributeSet(grid, name=attrname, value=inLog, rc=rc) 
+ write(failMsg, *) "Did not return ESMF_SUCESS" 
+ write(name, *) "Setting Grid Attribute (type Fortran logical scalar)" 
+ call ESMF_Test((rc==ESMF_SUCCESS), name, failMsg, result, ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ 
+ outLog = .false. 
+ !EX_UTest 
+ ! Get a logical attribute - scalar version 
+ call ESMF_AttributeGet(grid, name=attrname, value=outLog, & 
+ isPresent=isPresent, rc=rc) 
+ write(failMsg, *) "Did not return logical .TRUE." 
+ write(name, *) "Getting Grid Attribute (type Fortran logical scalar)" 
+ call ESMF_Test((rc == ESMF_SUCCESS) & 
+ .and.(inLog .eqv. outLog) & 
+ .and.(isPresent.eqv..true.), & 
+ name, failMsg, result, ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ 
+ !EX_UTest 
+ ! Remove an Attribute on a Grid Test 
+ call ESMF_AttributeRemove(grid, name=attrname, rc=rc) 
+ write(failMsg, *) "Did not return ESMF_SUCCESS" 
+ write(name, *) "Removing a logical Attribute on mobj Test" 
+ call ESMF_Test((rc==ESMF_SUCCESS), name, failMsg, result, ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ 
+ !EX_UTest 
+ ! Remove an Attribute on a Grid Test, again 
+ call ESMF_AttributeRemove(grid, name=attrname, rc=rc) 
+ write(failMsg, *) "Did not return ESMC_RC_NOT_FOUND" 
+ write(name, *) "Removing a logical Attribute on mobj Test, again" 
+ call ESMF_Test((rc==ESMC_RC_NOT_FOUND), name, failMsg, result, & 
+ ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ 
+ dfltoutLog = .false. 
+ defaultLog = .true. 
+ !EX_UTest 
+ ! Get a logical attribute - scalar version 
+ call ESMF_AttributeGet(grid, name=attrname, value=dfltoutLog, & 
+ defaultvalue=defaultLog, rc=rc) 
+ write(failMsg, *) "Did not return logical .TRUE." 
+ write(name, *) "Getting Grid default Attribute (type Fortran logical scalar)" 
+ call ESMF_Test((rc == ESMF_SUCCESS).and.(defaultLog .eqv. dfltoutLog), & 
+ name, failMsg, result, ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ 
+ !EX_UTest 
+ ! Get a logical Attribute isPresent flag on a Grid test 
+ call ESMF_AttributeGet(grid, name=attrname, value=outLog, & 
+ isPresent=isPresent, rc=rc) 
+ write(failMsg, *) "Did not return logical .TRUE." 
+ write(name, *) "Getting a logical Attribute isPresent flag on mobj test" 
+ call ESMF_Test((rc==ESMF_RC_ATTR_NOTSET) & 
+ .and.(isPresent.eqv..false.), & 
+ name, failMsg, result, ESMF_SRCLINE) 
+ !------------------------------------------------------------------------ 
+ 
+ !EX_UTest 
+ ! Get a logical Attribute error on a Grid test 
+ call ESMF_AttributeGet(grid, name=attrname, value=outLog, rc=rc) 
+ write(failMsg, *) "Did not return logical .TRUE." 
+ write(name, *) "Getting a logical Attribute error on mobj test" 
+ call ESMF_Test((rc == ESMF_RC_ATTR_NOTSET), name, failMsg, result, ESMF_SRCLINE) 
+ !------------------------------------------------------------------------ 
+ 
+ !---------------------------------------------------------------------- 
+ ! Constant value from variable 
+ !---------------------------------------------------------------------- 
+ !EX_UTest 
+ ! Add a constant Logical Attribute to a Grid Test 
+ call ESMF_AttributeSet(grid, name="ConstantLogical", value=.true., rc=rc) 
+ write(failMsg, *) "Did not return ESMF_SUCCESS" 
+ write(name, *) "Adding a constant Logical Attribute to mobj Test" 
+ call ESMF_Test((rc==ESMF_SUCCESS), name, failMsg, result, ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ 
+ !EX_UTest 
+ ! Get a constant Logical Attribute from a Grid Test 
+ call ESMF_AttributeGet(grid, name="ConstantLogical", value=outConstantLogical, rc=rc) 
+ write(failMsg, *) "Did not return ESMF_SUCCESS or wrong value" 
+ write(name, *) "Getting a constant Logical Attribute from mobj Test" 
+ call ESMF_Test((rc==ESMF_SUCCESS).and.(.true..eqv.outConstantLogical), & 
+ name, failMsg, result, ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ 
+ !---------------------------------------------------------------------- 
+ ! Logical list 
+ !---------------------------------------------------------------------- 
+ attrname = "flag grid" 
+ inLogl = (/ .true., .false., .true. /) 
+ 
+ !EX_UTest 
+ ! Set a logical attribute - grid version 
+ call ESMF_AttributeSet(grid, name=attrname, & 
+ valueList=inLogl, rc=rc) 
+ write(failMsg, *) "Did not return ESMF_SUCESS" 
+ write(name, *) "Setting Grid Attribute (type Fortran logical grid)" 
+ call ESMF_Test((rc==ESMF_SUCCESS), name, failMsg, result, ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ 
+ outLogl = .false. 
+ itemCount = 4 
+ !EX_UTest 
+ ! Get a logical attribute - grid version 
+ call ESMF_AttributeGet(grid, name=attrname, & 
+ valueList=outLogl, isPresent=isPresent, rc=rc) 
+ write(failMsg, *) "Did not return logical .TRUE." 
+ write(name, *) "Getting Grid Attribute (type Fortran logical grid)" 
+ call ESMF_Test((rc == ESMF_SUCCESS) & 
+ .and. all (inLogl .eqv. outLogl) & 
+ .and.(isPresent.eqv..true.), & 
+ name, failMsg, result, ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ 
+ !EX_UTest 
+ ! Remove an Attribute on a Grid Test 
+ call ESMF_AttributeRemove(grid, name=attrname, rc=rc) 
+ write(failMsg, *) "Did not return ESMF_SUCCESS" 
+ write(name, *) "Removing a logical list Attribute on mobj Test" 
+ call ESMF_Test((rc==ESMF_SUCCESS), name, failMsg, result, ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ 
+ !EX_UTest 
+ ! Remove an Attribute on a Grid Test, again 
+ call ESMF_AttributeRemove(grid, name=attrname, rc=rc) 
+ write(failMsg, *) "Did not return ESMC_RC_NOT_FOUND" 
+ write(name, *) "Removing a logical list Attribute on mobj Test, again" 
+ call ESMF_Test((rc==ESMC_RC_NOT_FOUND), name, failMsg, result, & 
+ ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ 
+ dfltoutLogl = (/.false.,.false.,.false./) 
+ defaultLogl = (/.true.,.true.,.true./) 
+ !EX_UTest 
+ ! Get a logical attribute - grid version 
+ call ESMF_AttributeGet(grid, name=attrname, & 
+ valueList=dfltoutLogl, defaultvalueList=defaultLogl, rc=rc) 
+ write(failMsg, *) "Did not return logical .TRUE." 
+ write(name, *) "Getting Grid default Attribute (type Fortran logical grid)" 
+ call ESMF_Test((rc == ESMF_SUCCESS) .and. all (defaultLogl .eqv. dfltoutLogl), & 
+ name, failMsg, result, ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ 
+ defaultLoglWrong = (/.true.,.true.,.true.,.true./) 
+ !EX_UTest 
+ ! Get a logical list default Attribute on a Grid Test 
+ call ESMF_AttributeGet(grid, name="Logl", & 
+ valueList=dfltOutLogl, defaultvalueList=defaultLoglWrong, rc=rc) 
+ write(failMsg, *) "Did not return ESMF_SUCCESS" 
+ write(name, *) "Getting a wrong sized default Attribute logical list from mobj test" 
+ call ESMF_Test((rc==ESMF_SUCCESS) .and. & 
+ all (dfltOutLogl.eqv.defaultLoglWrong(1:size(DfltOutLogl))), & 
+ name, failMsg, result, ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ 
+ !EX_UTest 
+ items = 3 
+ ! Get a logical list Attribute isPresent flag and itemCount on a Grid test 
+ call ESMF_AttributeGet(grid, name=attrname, & 
+ valueList=outLogl, itemCount=items, isPresent=isPresent, rc=rc) 
+ write(failMsg, *) "Did not return logical .TRUE." 
+ write(name, *) "Getting a logical list Attribute isPresent flag and itemCount on mobj test" 
+ call ESMF_Test((rc == ESMF_RC_ATTR_NOTSET) & 
+ .and.(isPresent.eqv..false.) & 
+ .and.(items==0), & 
+ name, failMsg, result, ESMF_SRCLINE) 
+ !------------------------------------------------------------------------ 
+ 
+ !EX_UTest 
+ ! Get a logical list Attribute isPresent flag on a Grid test 
+ call ESMF_AttributeGet(grid, name=attrname, & 
+ valueList=outLogl, isPresent=isPresent, rc=rc) 
+ write(failMsg, *) "Did not return logical .TRUE." 
+ write(name, *) "Getting a logical list Attribute isPresent flag on mobj test" 
+ call ESMF_Test((rc == ESMF_RC_ATTR_NOTSET) & 
+ .and.(isPresent.eqv..false.), & 
+ name, failMsg, result, ESMF_SRCLINE) 
+ !------------------------------------------------------------------------ 
+ 
+ !EX_UTest 
+ items = 3 
+ ! Get a logical list Attribute itemCount on a Grid test 
+ call ESMF_AttributeGet(grid, name=attrname, & 
+ valueList=outLogl, itemCount=items, rc=rc) 
+ write(failMsg, *) "Did not return logical .TRUE." 
+ write(name, *) "Getting a logical list Attribute itemCount on mobj test" 
+ call ESMF_Test((rc == ESMF_RC_ATTR_NOTSET) & 
+ .and.(items==0), & 
+ name, failMsg, result, ESMF_SRCLINE) 
+ !------------------------------------------------------------------------ 
+ 
+ !EX_UTest 
+ items = 3 
+ ! Get a logical list Attribute error on a Grid test 
+ call ESMF_AttributeGet(grid, name=attrname, & 
+ valueList=outLogl, rc=rc) 
+ write(failMsg, *) "Did not return logical .TRUE." 
+ write(name, *) "Getting a logical list Attribute error on mobj test" 
+ call ESMF_Test((rc == ESMF_RC_ATTR_NOTSET), name, failMsg, result, ESMF_SRCLINE) 
+ !------------------------------------------------------------------------ 
+ 
+ !---------------------------------------------------------------------- 
+ ! Constant value from variable 
+ !---------------------------------------------------------------------- 
+ !EX_UTest 
+ ! Add a constant Logical list Attribute to a Grid Test 
+ call ESMF_AttributeSet(grid, name="ConstantLogicalList", & 
+ valueList=(/.true.,.false.,.true./), rc=rc) 
+ write(failMsg, *) "Did not return ESMF_SUCCESS" 
+ write(name, *) "Adding a constant Logical list Attribute to mobj Test" 
+ call ESMF_Test((rc==ESMF_SUCCESS), name, failMsg, result, ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ 
+ !EX_UTest 
+ ! Get a constant Logical list Attribute from a Grid Test 
+ call ESMF_AttributeGet(grid, name="ConstantLogicalList", & 
+ valueList=outConstantLogicall, rc=rc) 
+ write(failMsg, *) "Did not return ESMF_SUCCESS or wrong value" 
+ write(name, *) "Getting a constant Logical list Attribute from mobj Test" 
+ call ESMF_Test((rc==ESMF_SUCCESS).and. & 
+ all((/.true.,.false.,.true./).eqv.outConstantLogicall), & 
+ name, failMsg, result, ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ 
+ !---------------------------------------------------------------------- 
+ ! WRONG SIZE ARRAY TESTS 
+ !---------------------------------------------------------------------- 
+ 
+ !---------------------------------------------------------------------- 
+ ! ESMF_I4 list - wrong size array 
+ !---------------------------------------------------------------------- 
+ 
+ !EX_UTest 
+ ! Add an ESMF_I4 list Attribute to a Grid Test 
+ call ESMF_AttributeSet(grid, name="AttrI4l", & 
+ valueList=inI4l, rc=rc) 
+ write(failMsg, *) "Did not return ESMF_SUCCESS" 
+ write(name, *) "Adding an ESMF_I4l Attribute to mobj Test" 
+ call ESMF_Test((rc==ESMF_SUCCESS), name, failMsg, result, ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ 
+ itemCount = 4 
+ !EX_UTest 
+ ! Too Short Get an ESMF_I4 list Attribute from a Grid Test 
+ call ESMF_AttributeGet(grid, name="AttrI4l", & 
+ valueList=outI4lLong(1:2), itemCount=itemCount, rc=rc) 
+ write(failMsg, *) "Did not return ESMF_RC_ATTR_ITEMSOFF" 
+ write(name, *) "Getting an ESMF_I4l Attribute from mobj Test with short valueList" 
+ call ESMF_Test(rc/=ESMF_SUCCESS, name, failMsg, result, ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ 
+ itemCount = 3 
+ !EX_UTest 
+ ! Too Long Get an ESMF_I4 list Attribute from a Grid Test 
+ call ESMF_AttributeGet(grid, name="AttrI4l", & 
+ valueList=outI4lLong(4:8), itemCount=itemCount, rc=rc) 
+ write(failMsg, *) "Did not return ESMF_SUCCESS or wrong value" 
+ write(name, *) "Getting an ESMF_I4l Attribute from mobj Test with long valueList" 
+ call ESMF_Test((rc==ESMF_SUCCESS).and. all (inI4l==outI4lLong(4:6) .and. & 
+ itemCount==3), name, failMsg, result, ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ 
+ !---------------------------------------------------------------------- 
+ ! ESMF_I8 list - wrong size array 
+ !---------------------------------------------------------------------- 
+ 
+ !EX_UTest 
+ ! Add an ESMF_I8 list Attribute to a Grid Test 
+ call ESMF_AttributeSet(grid, name="AttrI8l", & 
+ valueList=inI8l, rc=rc) 
+ write(failMsg, *) "Did not return ESMF_SUCCESS" 
+ write(name, *) "Adding an ESMF_I8l Attribute to mobj Test" 
+ call ESMF_Test((rc==ESMF_SUCCESS), name, failMsg, result, ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ 
+ itemCount = 4 
+ !EX_UTest 
+ ! Too Short Get an ESMF_I8 list Attribute from a Grid Test 
+ call ESMF_AttributeGet(grid, name="AttrI8l", & 
+ valueList=outI8lLong(1:2), itemCount=itemCount, rc=rc) 
+ write(failMsg, *) "Did not return ESMF_RC_ATTR_ITEMSOFF" 
+ write(name, *) "Getting an ESMF_I8l Attribute from mobj Test with short valueList" 
+ call ESMF_Test(rc/=ESMF_SUCCESS, name, failMsg, result, ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ 
+ itemCount = 3 
+ !EX_UTest 
+ ! Too Long Get an ESMF_I8 list Attribute from a Grid Test 
+ call ESMF_AttributeGet(grid, name="AttrI8l", & 
+ valueList=outI8lLong(4:8), itemCount=itemCount, rc=rc) 
+ write(failMsg, *) "Did not return ESMF_SUCCESS or wrong value" 
+ write(name, *) "Getting an ESMF_I8l Attribute from mobj Test with long valueList" 
+ call ESMF_Test((rc==ESMF_SUCCESS).and. all (inI8l==outI8lLong(4:6) .and. & 
+ itemCount==3), name, failMsg, result, ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ 
+ !---------------------------------------------------------------------- 
+ ! ESMF_R4 list - wrong size array 
+ !---------------------------------------------------------------------- 
+ 
+ !EX_UTest 
+ ! Add an ESMF_R4 list Attribute to a Grid Test 
+ call ESMF_AttributeSet(grid, name="AttrR4l", & 
+ valueList=inR4l, rc=rc) 
+ write(failMsg, *) "Did not return ESMF_SUCCESS" 
+ write(name, *) "Adding an ESMF_R4l Attribute to mobj Test" 
+ call ESMF_Test((rc==ESMF_SUCCESS), name, failMsg, result, ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ 
+ itemCount = 4 
+ !EX_UTest 
+ ! Too Short Get an ESMF_R4 list Attribute from a Grid Test 
+ call ESMF_AttributeGet(grid, name="AttrR4l", & 
+ valueList=outR4lLong(1:2), itemCount=itemCount, rc=rc) 
+ write(failMsg, *) "Did not return ESMF_RC_ATTR_ITEMSOFF" 
+ write(name, *) "Getting an ESMF_R4l Attribute from mobj Test with short valueList" 
+ call ESMF_Test(rc/=ESMF_SUCCESS, name, failMsg, result, ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ 
+ itemCount = 3 
+ !EX_UTest 
+ ! Too Long Get an ESMF_R4 list Attribute from a Grid Test 
+ call ESMF_AttributeGet(grid, name="AttrR4l", & 
+ valueList=outR4lLong(4:8), itemCount=itemCount, rc=rc) 
+ write(failMsg, *) "Did not return ESMF_SUCCESS or wrong value" 
+ write(name, *) "Getting an ESMF_R4l Attribute from mobj Test with long valueList" 
+ call ESMF_Test((rc==ESMF_SUCCESS).and. all (inR4l==outR4lLong(4:6) .and. & 
+ itemCount==3), name, failMsg, result, ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ 
+ !---------------------------------------------------------------------- 
+ ! ESMF_R8 list - wrong size array 
+ !---------------------------------------------------------------------- 
+ 
+ !EX_UTest 
+ ! Add an ESMF_R8 list Attribute to a Grid Test 
+ call ESMF_AttributeSet(grid, name="AttrR8l", & 
+ valueList=inR8l, rc=rc) 
+ write(failMsg, *) "Did not return ESMF_SUCCESS" 
+ write(name, *) "Adding an ESMF_R8l Attribute to mobj Test" 
+ call ESMF_Test((rc==ESMF_SUCCESS), name, failMsg, result, ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ 
+ itemCount = 4 
+ !EX_UTest 
+ ! Too Short Get an ESMF_R8 list Attribute from a Grid Test 
+ call ESMF_AttributeGet(grid, name="AttrR8l", & 
+ valueList=outR8lLong(1:2), itemCount=itemCount, rc=rc) 
+ write(failMsg, *) "Did not return ESMF_RC_ATTR_ITEMSOFF" 
+ write(name, *) "Getting an ESMF_R8l Attribute from mobj Test with short valueList" 
+ call ESMF_Test(rc/=ESMF_SUCCESS, name, failMsg, result, ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ 
+ itemCount = 3 
+ !EX_UTest 
+ ! Too Long Get an ESMF_R8 list Attribute from a Grid Test 
+ call ESMF_AttributeGet(grid, name="AttrR8l", & 
+ valueList=outR8lLong(4:8), itemCount=itemCount, rc=rc) 
+ write(failMsg, *) "Did not return ESMF_SUCCESS or wrong value" 
+ write(name, *) "Getting an ESMF_R8l Attribute from mobj Test with long valueList" 
+ call ESMF_Test((rc==ESMF_SUCCESS).and. all (inR8l==outR8lLong(4:6) .and. & 
+ itemCount==3), name, failMsg, result, ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ 
+ !---------------------------------------------------------------------- 
+ ! Character list wrong size array 
+ !---------------------------------------------------------------------- 
+ !EX_UTest 
+ ! Set a char list Attribute on a Grid Test 
+ call ESMF_AttributeSet(grid, name="Charl", & 
+ valueList=InCharl, rc=rc) 
+ write(failMsg, *) "Did not return ESMF_SUCCESS" 
+ write(name, *) "Setting an Attribute char list on mobj test" 
+ call ESMF_Test((rc==ESMF_SUCCESS), name, failMsg, result, ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ 
+ itemCount = 4 
+ !EX_UTest 
+ ! Too Short Get a char list Attribute from a Grid Test 
+ call ESMF_AttributeGet(grid, name="Charl", & 
+ valueList=outCharlLong(1:2),itemCount=itemCount, rc=rc) 
+ write(failMsg, *) "Did not return ESMF_RC_ATTR_ITEMSOFF" 
+ write(name, *) "Getting an Attribute char list from mobj test with short valueList" 
+ call ESMF_Test((rc/=ESMF_SUCCESS), name, failMsg, result, ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ 
+ itemCount = 3 
+ !EX_UTest 
+ ! Too Long Get a char list Attribute from a Grid Test 
+ call ESMF_AttributeGet(grid, name="Charl", & 
+ valueList=outCharlLong(4:8), itemCount=itemCount, rc=rc) 
+ write(failMsg, *) "Did not return ESMF_SUCCESS" 
+ write(name, *) "Getting a default Attribute char list from mobj test with long valueList" 
+ call ESMF_Test((rc==ESMF_SUCCESS).and. all (inCharl==outCharlLong(4:6) .and. & 
+ itemCount==3), name, failMsg, result, ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ 
+ !---------------------------------------------------------------------- 
+ ! Logical wrong size array 
+ !---------------------------------------------------------------------- 
+ !EX_UTest 
+ ! Set a logical attribute - grid version 
+ call ESMF_AttributeSet(grid, name=attrname, & 
+ valueList=inLogl, rc=rc) 
+ write(failMsg, *) "Did not return ESMF_SUCESS" 
+ write(name, *) "Setting an Attribute logical list on mobj test" 
+ call ESMF_Test((rc==ESMF_SUCCESS), name, failMsg, result, ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ 
+ outLogl = .false. 
+ !EX_UTest 
+ ! Too Short Get an ESMF_R8 list Attribute from a Grid Test 
+ call ESMF_AttributeGet(grid, name=attrname, & 
+ valueList=outLoglLong(1:2), rc=rc) 
+ write(failMsg, *) "Did not return ESMC_RC_ATTR_ITEMSOFF" 
+ write(name, *) "Getting an logical list Attribute from mobj Test with short valueList" 
+ call ESMF_Test((rc==ESMC_RC_ATTR_ITEMSOFF), name, failMsg, result, ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ 
+ itemCount = 3 
+ !EX_UTest 
+ ! Too Long Get an ESMF_R8 list Attribute from a Grid Test 
+ call ESMF_AttributeGet(grid, name=attrname, & 
+ valueList=outLoglLong(4:8), itemCount=itemCount, rc=rc) 
+ write(failMsg, *) "Did not return logical .TRUE." 
+ write(name, *) "Getting an logical list Attribute from mobj Test with long valueList" 
+ call ESMF_Test((rc == ESMF_SUCCESS).and. all (inLogl .eqv. outLoglLong(4:6)) .and. & 
+ itemCount==3, name, failMsg, result, ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ 
+ !---------------------------------------------------------------------- 
+ ! Attribute Info 
+ !---------------------------------------------------------------------- 
+ 
+ attrname="Character_name" 
+ attrvalue="stuff" 
+ ! Set a Character Attribute on a a Grid to test the get info calls 
+ call ESMF_AttributeSet(grid, name=attrname, value=attrvalue, rc=rc) 
+ 
+ !EX_UTest 
+ ! Get the Attribute count from a a Grid Test 
+ call ESMF_AttributeGet(grid, count=count, rc=rc) 
+ write(failMsg, *) "Did not return ESMF_SUCCESS or wrong value" 
+ write(name, *) "Getting the Attribute count from a mobj Test" 
+ call ESMF_Test((rc==ESMF_SUCCESS).and.(count.ge.0), & 
+ name, failMsg, result, ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ 
+ !EX_UTest 
+ ! Get Attribute info by name from a a Grid Test 
+ call ESMF_AttributeGet(grid, name=attrname, typekind=attrTK, & 
+ itemcount=items, rc=rc) 
+ write(failMsg, *) "Did not return ESMF_SUCCESS or wrong value" 
+ write(name, *) "Getting Attribute info by name from a mobj Test" 
+ call ESMF_Test((rc==ESMF_SUCCESS) & 
+ .and.(attrTK==ESMF_TYPEKIND_CHARACTER) & 
+ .and.(items==1), & 
+ name, failMsg, result, ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ 
+#endif 
+ 
+ items = 3 
+ attrTK = ESMF_TYPEKIND_CHARACTER 
+ isPresent = .true. 
+ !NEX_UTest 
+ ! Get Attribute info by name from a Grid Test 
+ call ESMF_AttributeGet(grid, name="NOTHERE", & 
+ typekind=attrTK, itemCount=items, isPresent=isPresent, rc=rc) 
+ write(failMsg, *) "Did not return ESMF_SUCCESS or wrong value" 
+ write(name, *) "Getting Attribute info by name with isPresent flag, itemCount, and typekind from mobj Test" 
+ call ESMF_Test((rc==ESMF_SUCCESS) & 
+ .and. (attrTK==ESMF_NOKIND) & 
+ .and. (items==0) & 
+ .and. (isPresent.eqv..false.),& 
+ name, failMsg, result, ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ 
+ items = 3 
+ attrTK = ESMF_TYPEKIND_CHARACTER 
+ !NEX_UTest 
+ ! Get Attribute info by name from a Grid Test 
+ call ESMF_AttributeGet(grid, name="NOTHERE", & 
+ typekind=attrTK, itemCount=items, rc=rc) 
+ write(failMsg, *) "Did not return ESMF_SUCCESS or wrong value" 
+ write(name, *) "Getting Attribute info by name with typekind and itemCount from mobj Test" 
+ call ESMF_Test((rc==ESMF_SUCCESS) & 
+ .and. (attrTK==ESMF_NOKIND) & 
+ .and. (items==0), & 
+ name, failMsg, result, ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ 
+ attrTK = ESMF_TYPEKIND_CHARACTER 
+ !NEX_UTest 
+ ! Get Attribute info by name from a Grid Test 
+ call ESMF_AttributeGet(grid, name="NOTHERE", & 
+ typekind=attrTK, rc=rc) 
+ write(failMsg, *) "Did not return ESMF_SUCCESS or wrong value" 
+ write(name, *) "Getting Attribute info by name with typekind from mobj Test" 
+ call ESMF_Test((rc==ESMF_SUCCESS) & 
+ .and. (attrTK==ESMF_NOKIND), & 
+ name, failMsg, result, ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ 
+ !NEX_UTest 
+ ! Get Attribute info by name from a Grid Test 
+ call ESMF_AttributeGet(grid, name="NOTHERE", rc=rc) 
+ write(failMsg, *) "Did not return ESMF_SUCCESS or wrong value" 
+ write(name, *) "Getting Attribute info by name with no args, will fail, from mobj Test" 
+ call ESMF_Test((rc==ESMF_RC_ATTR_NOTSET), name, failMsg, result, ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ 
+#ifdef ESMF_TESTEXHAUSTIVE 
+ 
+ !EX_UTest 
+ ! Get Attribute info by num from a a Grid Test 
+ call ESMF_AttributeGet(grid, attributeIndex=count, name=attrnameOut, & 
+ typekind=attrTK, itemcount=items, rc=rc) 
+ write(failMsg, *) "Did not return ESMF_SUCCESS or wrong value" 
+ write(name, *) "Getting Attribute info by num from a mobj Test" 
+ call ESMF_Test((rc==ESMF_SUCCESS).and.(attrname==attrnameOut) & 
+ .and.(attrTK==ESMF_TYPEKIND_CHARACTER) & 
+ .and.(items==1), & 
+ name, failMsg, result, ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ 
+#endif 
+! < end macro - do not edit directly > 
+!------------------------------------------------------------------------------
+!---------------------------------------------------------------------------- 
+! <This section created by macro - do not edit directly> 
+ 
+ gridA = ESMF_GridEmptyCreate(rc=rc) 
+ gridAlias = ESMF_GridEmptyCreate(rc=rc) 
+ gridHybrid = ESMF_GridEmptyCreate(rc=rc) 
+ gridValue = ESMF_GridEmptyCreate(rc=rc) 
+ 
+ !------------------------------------------------------------------------- 
+ ! AttributeCopy 
+ !------------------------------------------------------------------------- 
+ 
+ !NEX_UTest 
+ ! Get a constant character Attribute from ESMF_Grid Test 
+ call ESMF_AttributeSet(gridA, name="CopyChar", value="imacharA", rc=rc) 
+ write(failMsg, *) "Did not return ESMF_SUCCESS or wrong value" 
+ write(name, *) "Setting a constant character Attribute on mobj Test" 
+ call ESMF_Test((rc==ESMF_SUCCESS), & 
+ name, failMsg, result, ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ 
+ !NEX_UTest 
+ ! Copy a Grid Attribute hierarchy ALIAS Test 
+ call ESMF_AttributeCopy(gridA, gridAlias, & 
+ attcopy=ESMF_ATTCOPY_REFERENCE, rc=rc) 
+ write(failMsg, *) "Did not return ESMF_SUCCESS" 
+ write(name, *) "Copying mdesc Attribute hierarchy ALIAS Test" 
+ call ESMF_Test((rc==ESMF_SUCCESS), name, failMsg, result, ESMF_SRCLINE) 
+ !------------------------------------------------------------------------ 
+ 
+ !NEX_UTest 
+ ! Get a constant character Attribute from ESMF_Grid Test 
+ call ESMF_AttributeGet(gridAlias, name="CopyChar", value=outConstantChar, rc=rc) 
+ write(failMsg, *) "Did not return ESMF_SUCCESS or wrong value" 
+ write(name, *) "Getting a constant character Attribute from the alias mobj Test" 
+ call ESMF_Test((rc==ESMF_SUCCESS).and.("imacharA"==outConstantChar), & 
+ name, failMsg, result, ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ print *, trim(outConstantChar) 
+ 
+ !NEX_UTest 
+ ! Get the Attribute count from a ESMF_Grid Test 
+ call ESMF_AttributeGet(gridAlias, count=count, rc=rc) 
+ write(failMsg, *) "Did not return ESMF_SUCCESS or wrong value" 
+ write(name, *) "Getting the .Attribute count from a mobj Test" 
+ call ESMF_Test((rc==ESMF_SUCCESS).and.(count.ge.0), & 
+ name, failMsg, result, ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ print *, "count = ", count 
+ 
+ !NEX_UTest 
+ ! Get a constant character Attribute from ESMF_Grid Test 
+ call ESMF_AttributeSet(gridA, name="CopyChar", value="imachar", rc=rc) 
+ write(failMsg, *) "Did not return ESMF_SUCCESS or wrong value" 
+ write(name, *) "Setting a constant character Attribute on mobj Test" 
+ call ESMF_Test((rc==ESMF_SUCCESS), & 
+ name, failMsg, result, ESMF_SRCLINE) 
+ 
+ !NEX_UTest 
+ ! Get a constant character Attribute from ESMF_Grid Test 
+ call ESMF_AttributeGet(gridAlias, name="CopyChar", value=outConstantChar, rc=rc) 
+ write(failMsg, *) "Did not return ESMF_SUCCESS or wrong value" 
+ write(name, *) "Getting a constant character Attribute from the alias mobj Test" 
+ call ESMF_Test((rc==ESMF_SUCCESS).and.("imachar"==outConstantChar), & 
+ name, failMsg, result, ESMF_SRCLINE) 
+ !---------------------------------------------------------------------- 
+ print *, outConstantChar 
+ 
+ !NEX_UTest 
+ ! Copy a Grid Attribute hierarchy VALUE ONE LEVEL Test 
+ call ESMF_AttributeCopy(gridA, gridValue, & 
+ attcopy=ESMF_ATTCOPY_VALUE, rc=rc) 
+ write(failMsg, *) "Did not return ESMF_SUCCESS" 
+ write(name, *) "Copying mdesc Attribute hierarchy VALUE ONE LEVEL Test" 
+ call ESMF_Test((rc==ESMF_SUCCESS), name, failMsg, result, ESMF_SRCLINE) 
+ !------------------------------------------------------------------------ 
+ 
+ !NEX_UTest 
+ ! Copy a Grid Attribute hierarchy HYBRID Test 
+ call ESMF_AttributeCopy(gridA, gridHybrid, & 
+ attcopy=ESMF_ATTCOPY_REFERENCE, rc=rc) 
+ write(failMsg, *) "Did not return ESMF_SUCCESS" 
+ write(name, *) "Copying mdesc Attribute hierarchy HYBRID Test" 
+ call ESMF_Test((rc==ESMF_SUCCESS), name, failMsg, result, ESMF_SRCLINE) 
+ !------------------------------------------------------------------------ 
+ 
+ call ESMF_GridDestroy(gridA, rc=rc) 
+ call ESMF_GridDestroy(gridAlias, rc=rc) 
+ call ESMF_GridDestroy(gridHybrid, rc=rc) 
+ call ESMF_GridDestroy(gridValue, rc=rc) 
+ 
+! < end macro - do not edit directly > 
+!------------------------------------------------------------------------------
+      !------------------------------------------------------------------------
+      ! clean up
+      call ESMF_GridDestroy(grid, rc=rc)
+      if (rc .ne. ESMF_SUCCESS) call ESMF_Finalize(endflag=ESMF_END_ABORT)
+  !-----------------------------------------------------------------------------
+  call ESMF_TestEnd(ESMF_SRCLINE)
+  !-----------------------------------------------------------------------------
+end program ESMF_AttributeGridUTest

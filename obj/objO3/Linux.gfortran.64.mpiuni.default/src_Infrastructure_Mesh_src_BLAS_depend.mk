@@ -1,0 +1,14 @@
+  /root/src/esmf/obj/objO3/Linux.gfortran.64.mpiuni.default/dcopy.o :  
+  /root/src/esmf/obj/objO3/Linux.gfortran.64.mpiuni.default/ddot.o :  
+  /root/src/esmf/obj/objO3/Linux.gfortran.64.mpiuni.default/dger.o :  
+  /root/src/esmf/obj/objO3/Linux.gfortran.64.mpiuni.default/dnrm2.o :  
+  /root/src/esmf/obj/objO3/Linux.gfortran.64.mpiuni.default/drot.o :  
+  /root/src/esmf/obj/objO3/Linux.gfortran.64.mpiuni.default/dscal.o :  
+  /root/src/esmf/obj/objO3/Linux.gfortran.64.mpiuni.default/dswap.o :  
+  /root/src/esmf/obj/objO3/Linux.gfortran.64.mpiuni.default/dtrmm.o :  
+  /root/src/esmf/obj/objO3/Linux.gfortran.64.mpiuni.default/dtrmv.o :  
+  /root/src/esmf/obj/objO3/Linux.gfortran.64.mpiuni.default/idamax.o :  
+  /root/src/esmf/obj/objO3/Linux.gfortran.64.mpiuni.default/dgemv.o :  
+  /root/src/esmf/obj/objO3/Linux.gfortran.64.mpiuni.default/dgemm.o :  
+  /root/src/esmf/obj/objO3/Linux.gfortran.64.mpiuni.default/dtrsm.o :  
+  /root/src/esmf/obj/objO3/Linux.gfortran.64.mpiuni.default/daxpy.o :  

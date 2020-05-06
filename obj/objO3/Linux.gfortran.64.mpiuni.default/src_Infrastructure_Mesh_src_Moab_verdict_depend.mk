@@ -1,0 +1,11 @@
+  /root/src/esmf/obj/objO3/Linux.gfortran.64.mpiuni.default/V_EdgeMetric.o : 
+  /root/src/esmf/obj/objO3/Linux.gfortran.64.mpiuni.default/VerdictVector.o : 
+  /root/src/esmf/obj/objO3/Linux.gfortran.64.mpiuni.default/VerdictWrapper.o : 
+  /root/src/esmf/obj/objO3/Linux.gfortran.64.mpiuni.default/V_GaussIntegration.o : 
+  /root/src/esmf/obj/objO3/Linux.gfortran.64.mpiuni.default/V_HexMetric.o : 
+  /root/src/esmf/obj/objO3/Linux.gfortran.64.mpiuni.default/V_KnifeMetric.o : 
+  /root/src/esmf/obj/objO3/Linux.gfortran.64.mpiuni.default/V_PyramidMetric.o : 
+  /root/src/esmf/obj/objO3/Linux.gfortran.64.mpiuni.default/V_QuadMetric.o : 
+  /root/src/esmf/obj/objO3/Linux.gfortran.64.mpiuni.default/V_TetMetric.o : 
+  /root/src/esmf/obj/objO3/Linux.gfortran.64.mpiuni.default/V_TriMetric.o : 
+  /root/src/esmf/obj/objO3/Linux.gfortran.64.mpiuni.default/V_WedgeMetric.o : 

@@ -1,0 +1,9 @@
+  /root/src/esmf/obj/objO3/Linux.gfortran.64.mpiuni.default/ESMF_Util.o : /root/src/esmf/obj/objO3/Linux.gfortran.64.mpiuni.default/ESMF_IOUtil.o /root/src/esmf/obj/objO3/Linux.gfortran.64.mpiuni.default/ESMF_InitMacros.o /root/src/esmf/obj/objO3/Linux.gfortran.64.mpiuni.default/ESMF_LogErr.o /root/src/esmf/obj/objO3/Linux.gfortran.64.mpiuni.default/ESMF_UtilString.o /root/src/esmf/obj/objO3/Linux.gfortran.64.mpiuni.default/ESMF_UtilTypes.o ESMF.h
+  /root/src/esmf/obj/objO3/Linux.gfortran.64.mpiuni.default/ESMF_F90Interface.o : /root/src/esmf/obj/objO3/Linux.gfortran.64.mpiuni.default/ESMF_LogErr.o /root/src/esmf/obj/objO3/Linux.gfortran.64.mpiuni.default/ESMF_UtilTypes.o ESMF.h
+  /root/src/esmf/obj/objO3/Linux.gfortran.64.mpiuni.default/ESMF_Fraction.o : /root/src/esmf/obj/objO3/Linux.gfortran.64.mpiuni.default/ESMF_InitMacros.o /root/src/esmf/obj/objO3/Linux.gfortran.64.mpiuni.default/ESMF_UtilTypes.o ESMF.h
+  /root/src/esmf/obj/objO3/Linux.gfortran.64.mpiuni.default/ESMF_Util_C.o : /root/src/esmf/obj/objO3/Linux.gfortran.64.mpiuni.default/ESMF_IOUtil.o /root/src/esmf/obj/objO3/Linux.gfortran.64.mpiuni.default/ESMF_LogErr.o /root/src/esmf/obj/objO3/Linux.gfortran.64.mpiuni.default/ESMF_UtilTypes.o ESMF.h
+  /root/src/esmf/obj/objO3/Linux.gfortran.64.mpiuni.default/ESMCI_Util_F.o : ESMCI_F90Interface.h ESMCI_Macros.h ESMCI_Util.h
+  /root/src/esmf/obj/objO3/Linux.gfortran.64.mpiuni.default/ESMC_Util.o : ESMCI_Macros.h ESMC_Util.h
+  /root/src/esmf/obj/objO3/Linux.gfortran.64.mpiuni.default/ESMCI_F90Interface_F.o : ESMCI_F90Interface.h ESMCI_Macros.h ESMC_Util.h
+  /root/src/esmf/obj/objO3/Linux.gfortran.64.mpiuni.default/ESMC_Interface.o : ESMCI_F90Interface.h ESMCI_Macros.h ESMC_Interface.h
+  /root/src/esmf/obj/objO3/Linux.gfortran.64.mpiuni.default/ESMCI_Fraction_F.o : ESMCI_F90Interface.h ESMCI_Fraction.h

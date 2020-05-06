@@ -1,0 +1,15 @@
+  /root/src/esmf/obj/objO3/Linux.gfortran.64.mpiuni.default/ESMF_UtilTypes.o :  ESMF.h
+  /root/src/esmf/obj/objO3/Linux.gfortran.64.mpiuni.default/ESMF_UtilString.o :  ESMF.h
+  /root/src/esmf/obj/objO3/Linux.gfortran.64.mpiuni.default/ESMF_LogErr.o : /root/src/esmf/obj/objO3/Linux.gfortran.64.mpiuni.default/ESMF_IOUtil.o /root/src/esmf/obj/objO3/Linux.gfortran.64.mpiuni.default/ESMF_UtilString.o /root/src/esmf/obj/objO3/Linux.gfortran.64.mpiuni.default/ESMF_UtilTypes.o ESMF_ErrReturnCodes.inc ESMF_InitMacros.inc ESMF_LogConstants.inc ESMF_LogMacros.inc ESMF_Macros.inc
+  /root/src/esmf/obj/objO3/Linux.gfortran.64.mpiuni.default/ESMF_InitMacros.o : /root/src/esmf/obj/objO3/Linux.gfortran.64.mpiuni.default/ESMF_LogErr.o /root/src/esmf/obj/objO3/Linux.gfortran.64.mpiuni.default/ESMF_UtilTypes.o ESMF.h
+  /root/src/esmf/obj/objO3/Linux.gfortran.64.mpiuni.default/ESMF_IOUtil.o : /root/src/esmf/obj/objO3/Linux.gfortran.64.mpiuni.default/ESMF_UtilTypes.o ESMF.h
+  /root/src/esmf/obj/objO3/Linux.gfortran.64.mpiuni.default/ESMF_StaggerLocType.o : /root/src/esmf/obj/objO3/Linux.gfortran.64.mpiuni.default/ESMF_IOUtil.o /root/src/esmf/obj/objO3/Linux.gfortran.64.mpiuni.default/ESMF_LogErr.o /root/src/esmf/obj/objO3/Linux.gfortran.64.mpiuni.default/ESMF_UtilTypes.o ESMF.h
+  /root/src/esmf/obj/objO3/Linux.gfortran.64.mpiuni.default/ESMF_UtilCubedSphere.o : /root/src/esmf/obj/objO3/Linux.gfortran.64.mpiuni.default/ESMF_InitMacros.o /root/src/esmf/obj/objO3/Linux.gfortran.64.mpiuni.default/ESMF_UtilTypes.o 
+  /root/src/esmf/obj/objO3/Linux.gfortran.64.mpiuni.default/ESMF_AttPackType.o : /root/src/esmf/obj/objO3/Linux.gfortran.64.mpiuni.default/ESMF_InitMacros.o /root/src/esmf/obj/objO3/Linux.gfortran.64.mpiuni.default/ESMF_UtilTypes.o ESMF.h
+  /root/src/esmf/obj/objO3/Linux.gfortran.64.mpiuni.default/ESMF_FortranWordsize.o : ESMF_FortranWordsize.cppF90 /root/src/esmf/obj/objO3/Linux.gfortran.64.mpiuni.default/ESMF_LogErr.o /root/src/esmf/obj/objO3/Linux.gfortran.64.mpiuni.default/ESMF_UtilTypes.o ESMF.h ESMF_TypeKindMacros.hcppF90 ESMF_TypeKindRankMacros.hcppF90
+  /root/src/esmf/obj/objO3/Linux.gfortran.64.mpiuni.default/ESMF_TypeKindGet.o : ESMF_TypeKindGet.cppF90 /root/src/esmf/obj/objO3/Linux.gfortran.64.mpiuni.default/ESMF_LogErr.o /root/src/esmf/obj/objO3/Linux.gfortran.64.mpiuni.default/ESMF_UtilTypes.o ESMF.h ESMF_TypeKindMacros.hcppF90
+  /root/src/esmf/obj/objO3/Linux.gfortran.64.mpiuni.default/ESMF_UtilSort.o : ESMF_UtilSort.cppF90 /root/src/esmf/obj/objO3/Linux.gfortran.64.mpiuni.default/ESMF_UtilTypes.o ESMF_ErrReturnCodes.inc
+  /root/src/esmf/obj/objO3/Linux.gfortran.64.mpiuni.default/ESMCI_Util.o : ESMCI_Macros.h ESMCI_Util.h
+  /root/src/esmf/obj/objO3/Linux.gfortran.64.mpiuni.default/ESMCI_Fraction.o : ESMCI_Fraction.h ESMCI_Macros.h
+  /root/src/esmf/obj/objO3/Linux.gfortran.64.mpiuni.default/ESMCI_F90Interface.o : ESMCI_F90Interface.h ESMCI_Macros.h
+  /root/src/esmf/obj/objO3/Linux.gfortran.64.mpiuni.default/ESMCI_CoordSys.o : ESMCI_CoordSys.h ESMCI_Macros.h ESMC_Util.h
