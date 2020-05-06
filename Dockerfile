@@ -43,8 +43,9 @@ run add-apt-repository ppa:deadsnakes/ppa && \
     TINI_VERSION=$(cat tini.spec | grep -o "/v.*/" | head -15 | tail -1 | sed -r 's|/v(.*[^/])/|\1|') && \
     curl -LSs "https://github.com/krallin/tini/releases/download/v${TINI_VERSION}/tini_${TINI_VERSION}.deb" > tini.deb && \
     dpkg -i tini.deb && \
-    rm tini.deb tini.spec && \
-    conda update -n base -c defaults conda && \
+    rm tini.deb tini.spec
+
+run conda update -n base -c defaults conda && \
     conda init bash && \
     conda env create
 
