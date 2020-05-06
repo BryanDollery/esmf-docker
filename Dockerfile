@@ -16,7 +16,7 @@ env ESMF_DIR=/root/src/esmf \
     ESMF_NETCDF_LIBPATH=/usr/local/lib \
     ESMF_BOPT=O3 \
     LANG=C.UTF-8 LC_ALL=C.UTF-8 \
-    PATH /opt/conda/bin:$PATH
+    PATH=/opt/conda/bin:$PATH
 
 copy * /root/src/esmf
 
