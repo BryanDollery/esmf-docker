@@ -20,7 +20,9 @@ env ESMF_DIR=/root/src/esmf \
 
 copy * /root/src/esmf/
 
-run add-apt-repository ppa:deadsnakes/ppa && \
+run apt update && \
+    install software-properties-common && \
+    add-apt-repository ppa:deadsnakes/ppa && \
     apt update && \
     apt upgrade && \
     apt install -qqy git tcsh pkg-config gfortran netcdf-bin libnetcdf-dev libnetcdff-dev openmpi-bin libopenmpi-dev bash vim curl wget jq zip unzip make build-essential libnetcdff6 software-properties-common python3.7 zlib1g-dev libncurses5-dev libgdbm-dev libnss3-dev libssl-dev libreadline-dev libffi-dev ca-certificates bzip2 libglib2.0-0 libxext6 libsm6 libxrender1 && \
