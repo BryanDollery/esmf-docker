@@ -18,7 +18,7 @@ env ESMF_DIR=/root/src/esmf \
     LANG=C.UTF-8 LC_ALL=C.UTF-8 \
     PATH=/opt/conda/bin:$PATH
 
-copy * /root/src/esmf
+copy * /root/src/esmf/
 
 run add-apt-repository ppa:deadsnakes/ppa && \
     apt update && \
